@@ -1,80 +1,56 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-import { InputTextModule } from 'primeng/inputtext';
-import { AvatarModule } from 'primeng/avatar';
-import { BadgeModule } from 'primeng/badge';
-import { PanelModule } from 'primeng/panel';
 import { TimelineModule } from 'primeng/timeline';
+import { CardModule } from 'primeng/card';
 import { LlamadasService } from '../../services/llamadas.service';
-import { PacientesService } from '../../services/pacientes.service';
-import { Llamada } from '../../models/llamada.model';
+import { CitasService } from '../../services/citas.service';
+import { AlertasService } from '../../services/alertas.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule, 
-    RouterLink, 
-    CardModule, 
-    ButtonModule, 
-    TagModule, 
-    InputTextModule, 
-    AvatarModule, 
-    BadgeModule, 
-    PanelModule,
-    TimelineModule
-  ],
+  imports: [CommonModule, RouterLink, ButtonModule, TagModule, TimelineModule, CardModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
 export class DashboardComponent {
   private llamadasService = inject(LlamadasService);
-  private pacientesService = inject(PacientesService);
+  private citasService = inject(CitasService);
+  private alertasService = inject(AlertasService);
   
-  searchQuery = signal('');
-  llamadaSeleccionada = signal<Llamada | null>(null);
-  filtroGravedad = signal<string>('todas');
-  
-  readonly llamadas = this.llamadasService.llamadasFiltradas;
-  readonly graves = this.llamadasService.graves;
-  readonly moderados = this.llamadasService.moderados;
-  readonly leves = this.llamadasService.leves;
-  readonly totales = computed(() => this.llamadasService.llamadasList().length);
-  
-  readonly pacienteActual = computed(() => {
-    const ll = this.llamadaSeleccionada();
-    if (!ll) return null;
-    return this.pacientesService.getPaciente(ll.pacienteId);
+  readonly stats = computed(() => {
+    const lista = this.llamadasService.llamadasList();
+    const hoy = new Date();
+    const hoyStr = hoy.toDateString();
+    
+    const llamadasHoy = lista.filter(l => 
+      new Date(l.horaInicio).toDateString() === hoyStr
+    );
+    
+    return {
+      total: lista.length,
+      hoy: llamadasHoy.length,
+      graves: lista.filter(l => l.clasificacion === 'grave').length,
+      moderados: lista.filter(l => l.clasificacion === 'moderado').length,
+      leves: lista.filter(l => l.clasificacion === 'leve').length,
+      emergencias: lista.filter(l => l.clasificacion === 'grave' && l.estado !== 'resuelta').length,
+      enProceso: lista.filter(l => l.estado === 'en_proceso').length,
+      resueltas: lista.filter(l => l.estado === 'resuelta').length,
+      citasHoy: this.citasService.citasList().filter(c => 
+        new Date(c.fecha).toDateString() === hoyStr
+      ).length,
+      alertasSinLeer: this.alertasService.sinLeer().length
+    };
   });
   
-  readonly historialLlamadas = computed(() => {
-    const p = this.pacienteActual();
-    if (!p) return [];
-    return this.llamadasService.getLlamadasPorPaciente(p.id).slice(0, 5);
+  readonly ultimasLlamadas = computed(() => {
+    return this.llamadasService.llamadasList()
+      .sort((a, b) => new Date(b.horaInicio).getTime() - new Date(a.horaInicio).getTime())
+      .slice(0, 5);
   });
-  
-  selectLlamada(llamada: Llamada): void {
-    this.llamadaSeleccionada.set(llamada);
-  }
-  
-  onSearch(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.searchQuery.set(value);
-    this.llamadasService.setFiltro({ search: value });
-  }
-  
-  filtrarPorGravedad(gravedad: string): void {
-    this.filtroGravedad.set(gravedad);
-    if (gravedad === 'todas') {
-      this.llamadasService.clearFiltro();
-    } else {
-      this.llamadasService.setFiltro({ clasificacion: gravedad as any });
-    }
-  }
   
   getSeverity(gravedad: string): 'danger' | 'warn' | 'success' | 'info' {
     const map: Record<string, 'danger' | 'warn' | 'success' | 'info'> = {
@@ -107,6 +83,15 @@ export class DashboardComponent {
     return new Date(date).toLocaleDateString('es-MX', {
       day: 'numeric',
       month: 'short'
+    });
+  }
+  
+  today(): string {
+    return new Date().toLocaleDateString('es-MX', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     });
   }
 }

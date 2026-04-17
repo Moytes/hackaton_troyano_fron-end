@@ -252,6 +252,31 @@ input, textarea, select {
   font-size: 12px;
 }
 
+/* PrimeNG Tooltip - Personalizado */
+.p-tooltip {
+  z-index: 9999;
+}
+
+.p-tooltip-text {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
+  color: white !important;
+  padding: 10px 16px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(13, 148, 136, 0.3) !important;
+}
+
+.p-tooltip-arrow {
+  border-right-color: #1E293B !important;
+  border-bottom-color: #1E293B !important;
+}
+
+.p-tooltip-bottom .p-tooltip-arrow {
+  border-top-color: #1E293B !important;
+}
+
 @media (max-width: 768px) {
   :root {
     --font-size-base: 14px;

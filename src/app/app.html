@@ -1,25 +1,27 @@
 <div class="app-container">
-  <app-header 
-    (menuToggle)="toggleSidebar()"
-    (toggleSidebar)="toggleSidebarDesktop()"
-    [mostrarToggle]="!esLanding()">
-  </app-header>
+  @if (!esLogin()) {
+    <app-header 
+      (menuToggle)="onMenuToggle()"
+      [mostrarToggle]="!esLanding()">
+    </app-header>
+  }
   
   <div class="app-body">
-    @if (!esLanding()) {
+    @if (!esLanding() && !esLogin()) {
       <app-sidebar 
-        [collapsed]="sidebarCollapsed()"
+        [collapsed]="esSidebarExpandido()"
+        [mobileOpen]="mobileMenuOpen()"
         (closeSidebar)="closeMobileMenu()"
-        [class.mobile-open]="mobileMenuOpen()">
+        (toggleCollapse)="onToggleCollapse()">
       </app-sidebar>
     }
     
-    <main class="main-content" [class.full-width]="esLanding()">
+    <main class="main-content" [class.full-width]="esLanding() || esLogin()">
       <router-outlet></router-outlet>
     </main>
   </div>
   
-  @if (mobileMenuOpen() && !esLanding()) {
+  @if (mobileMenuOpen() && !esLanding() && !esLogin()) {
     <div class="overlay" (click)="closeMobileMenu()"></div>
   }
 </div>

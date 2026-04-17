@@ -1,40 +1,106 @@
-<aside class="sidebar" [class.collapsed]="collapsed">
+<aside class="sidebar" [class.collapsed]="collapsed" [class.mobile-open]="mobileOpen">
   <div class="sidebar-header">
-    <div class="sidebar-title" *ngIf="!collapsed">
-      <span class="title-icon">🏥</span>
-      <span> TeleAsistencia</span>
+    @if (!collapsed) {
+      <div class="sidebar-brand">
+        <span class="brand-text">
+          <span class="brand-name">TeleAsistencia</span>
+          <span class="brand-region">Sierra QR</span>
+        </span>
+      </div>
+    }
+    
+    <div class="sidebar-actions">
+      <button 
+        pButton 
+        [icon]="collapsed ? 'pi pi-angle-right' : 'pi pi-angle-left'" 
+        class="sidebar-action-btn collapse-btn"
+        (click)="toggleCollapse.emit()"
+        [pTooltip]="collapsed ? 'Expandir' : 'Contraer'"
+        tooltipPosition="bottom"
+        [attr.aria-label]="collapsed ? 'Expandir sidebar' : 'Contraer sidebar'">
+      </button>
     </div>
-    <button 
-      pButton 
-      type="button" 
-      icon="pi pi-times" 
-      class="p-button-text p-button-rounded close-btn"
-      (click)="closeSidebar.emit()"
-      *ngIf="!collapsed"
-      aria-label="Close sidebar">
-    </button>
   </div>
   
   <nav class="sidebar-nav">
-    @for (item of menuItems; track item.route) {
+    @for (item of menuItems; track item.route; let i = $index) {
       <a 
         [routerLink]="item.route"
         routerLinkActive="active"
         class="nav-item"
-        [title]="item.label">
-        <i [class]="item.icon"></i>
-        <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
-        @if (item.badge && !collapsed) {
-          <p-badge [value]="item.badge.toString()" severity="danger" class="nav-badge"></p-badge>
+        [style.--item-index]="i"
+        [pTooltip]="getTooltip(item)"
+        tooltipPosition="right">
+        <span class="nav-icon">
+          <i [class]="item.icon"></i>
+        </span>
+        @if (!collapsed) {
+          <span class="nav-label">{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="nav-badge" [class]="'badge-' + item.severity">{{ item.badge }}</span>
+          }
         }
       </a>
     }
   </nav>
   
-  <div class="sidebar-footer" *ngIf="!collapsed">
-    <div class="footer-info">
-      <span class="version">v1.0.0</span>
-      <span class="sierra">Sierra QR</span>
+  @if (!collapsed) {
+    <div class="sidebar-footer">
+      <div class="footer-status">
+        <span class="status-indicator">
+          <span class="status-dot"></span>
+          <span class="status-text">Sistema activo</span>
+        </span>
+      </div>
+      <div class="footer-version">
+        <span>v1.0.0</span>
+        <span class="divider">·</span>
+        <span>{{ getCurrentDate() }}</span>
+      </div>
+      <button 
+        pButton 
+        icon="pi pi-sign-out" 
+        label="Cerrar Sesión"
+        class="logout-btn"
+        (click)="logout()"
+        pTooltip="Cerrar Sesión"
+        tooltipPosition="right">
+      </button>
     </div>
-  </div>
+  }
 </aside>
+
+<p-dialog 
+  header="Cerrar Sesión" 
+  [(visible)]="showLogoutDialog" 
+  [modal]="true" 
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="logout-dialog"
+  [style]="{width: '400px'}">
+  <div class="logout-dialog-content">
+    <div class="logout-icon">
+      <i class="pi pi-exclamation-circle"></i>
+    </div>
+    <p class="logout-message">¿Seguro que deseas cerrar sesión?</p>
+    <p class="logout-submessage">Tu sesión se terminará y saldrás de la plataforma.</p>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="logout-dialog-actions">
+      <button 
+        pButton 
+        label="Cancelar" 
+        class="p-button-text"
+        (click)="cancelLogout()">
+      </button>
+      <button 
+        pButton 
+        label="Cerrar Sesión" 
+        class="p-button-danger"
+        icon="pi pi-sign-out"
+        (click)="confirmLogout()">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

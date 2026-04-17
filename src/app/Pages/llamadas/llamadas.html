@@ -1,34 +1,413 @@
-<div class="llamadas-page">
-  <div class="page-header">
-    <h1>Llamadas</h1>
-  </div>
-  
-  <div class="filtros">
-    <button pButton class="p-button-outlined" (click)="filtrar('grave')">
-      <span class="dot grave"></span> Grave ({{ graves().length }})
-    </button>
-    <button pButton class="p-button-outlined" (click)="filtrar('moderado')">
-      <span class="dot moderado"></span> Moderado ({{ moderados().length }})
-    </button>
-    <button pButton class="p-button-outlined" (click)="filtrar('leve')">
-      <span class="dot leve"></span> Leve ({{ leves().length }})
-    </button>
-    <button pButton class="p-button-outlined" (click)="filtrar('todas')">Todas</button>
-  </div>
-  
-  <div class="llamadas-list">
-    @for (llamada of llamadas(); track llamada.id) {
-      <a [routerLink]="['/llamada', llamada.id]" class="llamada-card">
-        <div class="indicator" [class]="llamada.clasificacion"></div>
-        <div class="content">
-          <h3>{{ llamada.pacienteNombre }}</h3>
-          <p>{{ llamada.descripcion }}</p>
-          <div class="meta">
-            <span class="hora">{{ formatHora(llamada.horaInicio) }}</span>
-            <p-tag [value]="getLabel(llamada.clasificacion)" [severity]="getSeverity(llamada.clasificacion)"></p-tag>
+<div class="llamadas-container">
+  <!-- PANEL 1: Lista de Llamadas -->
+  <div class="panel panel-lista">
+    <!-- Header -->
+    <div class="panel-header">
+      <div class="header-left">
+        <div class="header-icon">
+          <i class="pi pi-phone"></i>
+        </div>
+        <div class="header-title">
+          <h1>Llamadas</h1>
+          <p>Gestión de llamadas entrantes</p>
+        </div>
+      </div>
+      <div class="header-count">{{ todas().length }}</div>
+    </div>
+    
+    <!-- Search -->
+    <div class="search-box">
+      <i class="pi pi-search"></i>
+      <input 
+        type="text" 
+        pInputText 
+        [value]="searchQuery()"
+        (input)="buscar($event)"
+        placeholder="Buscar por paciente o descripción...">
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filtros">
+      <button 
+        class="filtro-btn" 
+        [class.active]="filtroActivo() === 'todas'"
+        (click)="setFiltro('todas')">
+        Todas
+      </button>
+      <button 
+        class="filtro-btn grave" 
+        [class.active]="filtroActivo() === 'grave'"
+        (click)="setFiltro('grave')">
+        <span class="dot"></span> Grave ({{ graves().length }})
+      </button>
+      <button 
+        class="filtro-btn moderado" 
+        [class.active]="filtroActivo() === 'moderado'"
+        (click)="setFiltro('moderado')">
+        <span class="dot"></span> Moderado ({{ moderados().length }})
+      </button>
+      <button 
+        class="filtro-btn leve" 
+        [class.active]="filtroActivo() === 'leve'"
+        (click)="setFiltro('leve')">
+        <span class="dot"></span> Leve ({{ leves().length }})
+      </button>
+    </div>
+    
+    <!-- Lista -->
+    <div class="lista">
+      @for (llamada of llamadasFiltradas(); track llamada.id) {
+        <div 
+          class="llamada-card" 
+          [class]="'card-' + llamada.clasificacion"
+          [class.seleccionada]="llamadaSeleccionada()?.id === llamada.id"
+          (click)="seleccionarLlamada(llamada)">
+          <div class="card-indicator" [class]="llamada.clasificacion"></div>
+          <div class="card-content">
+            <div class="card-header-row">
+              <span class="paciente-nombre">{{ llamada.pacienteNombre }}</span>
+              <span class="card-hora">{{ formatHora(llamada.horaInicio) }}</span>
+            </div>
+            <p class="card-desc">{{ llamada.descripcion | slice:0:45 }}...</p>
+            <div class="card-meta">
+              <p-tag 
+                [value]="getLabelClasificacion(llamada.clasificacion)" 
+                [severity]="getSeverity(llamada.clasificacion)">
+              </p-tag>
+              <span class="card-triage"><i class="pi pi-target"></i> T{{ llamada.nivelTriage }}</span>
+            </div>
           </div>
         </div>
-      </a>
+      } @empty {
+        <div class="empty-state">
+          <i class="pi pi-inbox"></i>
+          <h3>No se encontraron llamadas</h3>
+          <p>Intenta con otros filtros</p>
+        </div>
+      }
+    </div>
+  </div>
+  
+  <!-- PANEL 2: Detalle de Llamada -->
+  <div class="panel panel-detalle">
+    @if (llamadaSeleccionada()) {
+      <!-- Header improved -->
+      <div class="detalle-header header-improved">
+        <div class="header-paciente">
+          <div class="avatar-large" [class]="'avatar-' + llamadaSeleccionada()!.clasificacion">
+            <i class="pi pi-user"></i>
+          </div>
+          <div class="header-info">
+            <h2>{{ llamadaSeleccionada()!.pacienteNombre }}</h2>
+            <div class="header-meta">
+              <p-tag 
+                [value]="'T' + llamadaSeleccionada()!.nivelTriage + ' - ' + getLabelClasificacion(llamadaSeleccionada()!.clasificacion)" 
+                [severity]="getSeverity(llamadaSeleccionada()!.clasificacion)"
+                class="triage-tag">
+              </p-tag>
+              <span class="triage-badge">
+                <i class="pi pi-clock"></i>
+                {{ formatDuracion(llamadaSeleccionada()!.duracion) }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button pButton icon="pi pi-phone" pTooltip="Llamar" class="p-button-rounded p-button-text"></button>
+          <button pButton icon="pi pi-heart" pTooltip="Monitorear" class="p-button-rounded p-button-text"></button>
+        </div>
+      </div>
+
+      <!-- Estado y Timeline -->
+      <div class="status-card">
+        <div class="status-item" [class.active]="llamadaSeleccionada()!.estado === 'resuelta'">
+          <div class="status-icon"><i class="pi pi-check-circle"></i></div>
+          <div class="status-content">
+            <span class="status-label">Ingresada</span>
+            <span class="status-time">{{ formatHora(llamadaSeleccionada()!.horaInicio) }}</span>
+          </div>
+        </div>
+        <div class="status-line" [class.completed]="llamadaSeleccionada()!.estado === 'resuelta' || llamadaSeleccionada()!.estado === 'en_proceso' || llamadaSeleccionada()!.estado === 'escalada'"></div>
+        <div class="status-item" [class.active]="llamadaSeleccionada()!.estado === 'en_proceso' || llamadaSeleccionada()!.estado === 'escalada'">
+          <div class="status-icon"><i class="pi pi-loader"></i></div>
+          <div class="status-content">
+            <span class="status-label">En Proceso</span>
+            <span class="status-time">{{ llamadaSeleccionada()!.estado === 'en_proceso' ? formatHora(getTiempoAgora(llamadaSeleccionada()!.horaInicio)) : '--:--' }}</span>
+          </div>
+        </div>
+        <div class="status-line" [class.completed]="llamadaSeleccionada()!.estado === 'escalada'"></div>
+        <div class="status-item" [class.active]="llamadaSeleccionada()!.estado === 'escalada'">
+          <div class="status-icon"><i class="pi pi-arrow-up-circle"></i></div>
+          <div class="status-content">
+            <span class="status-label">Escalada</span>
+            <span class="status-time">{{ llamadaSeleccionada()!.horaEscalada ? formatHora(llamadaSeleccionada()!.horaEscalada!) : '--:--' }}</span>
+          </div>
+        </div>
+        <div class="status-line" [class.completed]="llamadaSeleccionada()!.estado === 'resuelta'"></div>
+        <div class="status-item" [class.active]="llamadaSeleccionada()!.estado === 'resuelta'">
+          <div class="status-icon"><i class="pi pi-check"></i></div>
+          <div class="status-content">
+            <span class="status-label">Resuelta</span>
+            <span class="status-time">{{ llamadaSeleccionada()!.horaFin ? formatHora(llamadaSeleccionada()!.horaFin!) : '--:--' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info grid -->
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-icon"><i class="pi pi-tag"></i></div>
+          <div class="info-data">
+            <span class="info-label">Tipo</span>
+            <span class="info-value">{{ llamadaSeleccionada()!.tipo | titlecase }}</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><i class="pi pi-user"></i></div>
+          <div class="info-data">
+            <span class="info-label">Agente</span>
+            <span class="info-value">{{ getAgenteNombre(llamadaSeleccionada()!.agenteId) }}</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><i class="pi pi-calendar"></i></div>
+          <div class="info-data">
+            <span class="info-label">Inicio</span>
+            <span class="info-value">{{ formatFechaHora(llamadaSeleccionada()!.horaInicio) }}</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><i class="pi pi-clock"></i></div>
+          <div class="info-data">
+            <span class="info-label">Duración</span>
+            <span class="info-value">{{ formatDuracion(llamadaSeleccionada()!.duracion) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descripción del paciente -->
+      <div class="descripcion-card">
+        <div class="descripcion-header">
+          <i class="pi pi-comment-medical"></i>
+          <span>Descripción del paciente</span>
+        </div>
+        <p class="descripcion-text">{{ llamadaSeleccionada()!.descripcion }}</p>
+      </div>
+
+      <!-- Síntomas -->
+      <div class="sintomas-card">
+        <div class="sintomas-header">
+          <i class="pi pi-heart"></i>
+          <span>Síntomas reportados</span>
+          <span class="sintomas-count">{{ llamadaSeleccionada()!.sintomasIniciales.length }}</span>
+        </div>
+        <div class="sintomas-list">
+          @for (sintoma of llamadaSeleccionada()!.sintomasIniciales; track sintoma) {
+            <span class="sintoma-pill">{{ sintoma }}</span>
+          } @empty {
+            <span class="no-sintomas">No se reportaron síntomas específicos</span>
+          }
+        </div>
+      </div>
+
+      <!-- Análisis IA -->
+      @if (llamadaSeleccionada()!.resumenIA) {
+        <div class="ia-card">
+          <div class="ia-header">
+            <div class="ia-icon"><i class="pi pi-sparkles"></i></div>
+            <div class="ia-title">
+              <span>Análisis IA</span>
+              <span class="ia-subtitle">Evaluación automática</span>
+            </div>
+          </div>
+          <p class="ia-text">{{ llamadaSeleccionada()!.resumenIA }}</p>
+          @if (llamadaSeleccionada()!.agenteEspecializado) {
+            <div class="ia-derivation">
+              <i class="pi pi-arrow-right"></i>
+              <span>Derivado a: <strong>{{ getAgenteLabel(llamadaSeleccionada()!.agenteEspecializado!) }}</strong></span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Acciones -->
+      <div class="acciones-grid">
+        <button pButton label="Derivar" icon="pi pi-user-plus" class="p-button-outlined action-btn"></button>
+        <button pButton label="Agendar" icon="pi pi-calendar-plus" class="p-button-outlined action-btn"></button>
+        <button pButton label="Chat IA" icon="pi pi-comments" routerLink="/chat" class="p-button-help action-btn"></button>
+        <button pButton label="Completar" icon="pi pi-check" class="p-button-success action-btn"></button>
+      </div>
+    } @else {
+      <div class="no-seleccion">
+        <i class="pi pi-phone"></i>
+        <h3>Selecciona una llamada</h3>
+        <p>Elige una llamada de la lista para ver los detalles</p>
+      </div>
+    }
+  </div>
+  
+  <!-- PANEL 3: Datos del Paciente -->
+  <div class="panel panel-paciente">
+    @if (pacienteActual()) {
+      <!-- Header paciente -->
+      <div class="paciente-header">
+        <div class="paciente-avatar">
+          <i class="pi pi-user"></i>
+        </div>
+        <div class="paciente-info">
+          <h2>{{ pacienteActual()!.nombre }} {{ pacienteActual()!.apellidoPaterno }} {{ pacienteActual()!.apellidoMaterno }}</h2>
+          <div class="paciente-quick-actions">
+            <button pButton label="Llamar" icon="pi pi-phone" class="p-button-success p-button-sm btn-action"></button>
+            <button pButton label="Mensaje" icon="pi pi-comment" class="p-button-outlined p-button-sm btn-action"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contactos -->
+      <div class="contactos-card">
+        <div class="contacto-item">
+          <div class="contacto-icon"><i class="pi pi-phone"></i></div>
+          <div class="contacto-data">
+            <span class="contacto-label">Teléfono</span>
+            <span class="contacto-value">{{ pacienteActual()!.telefono }}</span>
+          </div>
+          <button pButton icon="pi pi-copy" class="p-button-text p-button-sm p-button-rounded"></button>
+        </div>
+        <div class="contacto-item emergency">
+          <div class="contacto-icon"><i class="pi pi-exclamation-triangle"></i></div>
+          <div class="contacto-data">
+            <span class="contacto-label">Emergencia</span>
+            <span class="contacto-value">{{ pacienteActual()!.telefonoEmergencia }}</span>
+          </div>
+          <button pButton icon="pi pi-copy" class="p-button-text p-button-sm p-button-rounded"></button>
+        </div>
+        <div class="contacto-item">
+          <div class="contacto-icon"><i class="pi pi-map-marker"></i></div>
+          <div class="contacto-data">
+            <span class="contacto-label">Comunidad</span>
+            <span class="contacto-value">{{ pacienteActual()!.comunidad }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info personal grid -->
+      <div class="paciente-info-grid">
+        <div class="info-box">
+          <div class="info-box-icon age"><i class="pi pi-calendar"></i></div>
+          <div class="info-box-data">
+            <span class="info-box-value">{{ pacienteActual()!.edad }} años</span>
+            <span class="info-box-label">Edad</span>
+          </div>
+        </div>
+        <div class="info-box">
+          <div class="info-box-icon blood"><i class="pi pi-heart-fill"></i></div>
+          <div class="info-box-data">
+            <span class="info-box-value blood-type">{{ pacienteActual()!.tipoSangre }}</span>
+            <span class="info-box-label">Tipo de sangre</span>
+          </div>
+        </div>
+        <div class="info-box">
+          <div class="info-box-icon gen"><i class="pi pi-user"></i></div>
+          <div class="info-box-data">
+            <span class="info-box-value">{{ pacienteActual()!.genero === 'M' ? 'Masculino' : 'Femenino' }}</span>
+            <span class="info-box-label">Género</span>
+          </div>
+        </div>
+        <div class="info-box">
+          <div class="info-box-icon reg"><i class="pi pi-calendar-plus"></i></div>
+          <div class="info-box-data">
+            <span class="info-box-value">{{ formatFecha(pacienteActual()!.fechaRegistro) }}</span>
+            <span class="info-box-label">Registrado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alertas médicas -->
+      <div class="medical-alerts">
+        @if (pacienteActual()!.enfermedadesCronicas.length > 0) {
+          <div class="alert-section">
+            <div class="alert-title">
+              <i class="pi pi-exclamation-circle"></i>
+              <span>Enfermedades crónicas</span>
+            </div>
+            <div class="alert-chips">
+              @for (enfermedad of pacienteActual()!.enfermedadesCronicas; track enfermedad) {
+                <span class="alert-chip disease">{{ enfermedad }}</span>
+              }
+            </div>
+          </div>
+        }
+        
+        @if (pacienteActual()!.alergias.length > 0) {
+          <div class="alert-section">
+            <div class="alert-title">
+              <i class="pi pi-exclamation-triangle"></i>
+              <span>Alergias</span>
+            </div>
+            <div class="alert-chips">
+              @for (alergia of pacienteActual()!.alergias; track alergia) {
+                <span class="alert-chip allergy">{{ alergia }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Medicamentos -->
+      @if (pacienteActual()!.medicamentos.length > 0) {
+        <div class="medicamentos-card">
+          <div class="medicamentos-header">
+            <i class="pi pi-box"></i>
+            <span>Medicamentos actuales</span>
+            <span class="med-count">{{ pacienteActual()!.medicamentos.length }}</span>
+          </div>
+          <div class="medicamentos-list">
+            @for (med of pacienteActual()!.medicamentos; track med) {
+              <div class="med-item">
+                <div class="med-icon"><i class="pi pi-check-circle"></i></div>
+                <span class="med-name">{{ med }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Historial de llamadas -->
+      @if (historialPaciente().length > 0) {
+        <div class="historial-card">
+          <div class="historial-header">
+            <i class="pi pi-list"></i>
+            <span>Historial ({{ historialPaciente().length }})</span>
+          </div>
+          <div class="historial-list">
+            @for (ll of historialPaciente(); track ll.id) {
+              <div class="hist-item">
+                <div class="hist-item-left">
+                  <p-tag 
+                    [value]="getLabelClasificacion(ll.clasificacion)" 
+                    [severity]="getSeverity(ll.clasificacion)"
+                    class="hist-tag">
+                  </p-tag>
+                </div>
+                <div class="hist-item-center">
+                  <span class="hist-item-title">{{ ll.tipo | titlecase }}</span>
+                  <span class="hist-item-desc">{{ ll.descripcion | slice:0:25 }}...</span>
+                </div>
+                <div class="hist-item-right">
+                  <span class="hist-item-date">{{ formatFecha(ll.horaInicio) }}</span>
+                  <span class="hist-item-status">{{ getLabelEstado(ll.estado) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="no-paciente">
+        <i class="pi pi-user"></i>
+        <h3>Selecciona una llamada</h3>
+        <p>Para ver los datos del paciente</p>
+      </div>
     }
   </div>
 </div>

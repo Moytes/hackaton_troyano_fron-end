@@ -107,6 +107,10 @@ export const PACIENTES_MOCK: Paciente[] = [
   }
 ];
 
+const now = new Date();
+const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+
 export const LLAMADAS_MOCK: Llamada[] = [
   {
     id: 'll1',
@@ -116,40 +120,43 @@ export const LLAMADAS_MOCK: Llamada[] = [
     nivelTriage: 2,
     estado: 'en_proceso',
     tipo: 'emergencia',
-    sintomasIniciales: ['Dolor en el pecho', 'Falta de aire'],
-    descripcion: 'Me duele mucho el pecho y no puedo respirar bien. Tengo 72 años y tengo diabetes.',
+    sintomasIniciales: ['Dolor en el pecho', 'Falta de aire', 'Sudoración'],
+    descripcion: 'Me duele mucho el pecho y no puedo respirar bien. Tengo una presión en el pecho que me baja al brazo.',
     duracion: 180,
-    resumenIA: 'Paciente masculino de 72 años con dolor torácico opresivo y disnea. Historia de diabetes e hipertensión. Síntomas started hace 2 horas. Clasificado como EMERGENCIA - requiere atención inmediata.',
-    horaInicio: new Date('2025-04-16T10:30:00'),
+    resumenIA: 'Varón 72a con dolor torácico opresivo irradiado + disnea + diaforesis. HF: DM2, HTN. Inicio hace 45min. ECG: sospecha SCA. Clasificación: EMERGENCIA (T2) - Activar protocoloCode5.',
+    horaInicio: new Date(today.getTime() - 25 * 60 * 1000),
     agenteId: 'ia1'
   },
   {
     id: 'll2',
-    pacienteId: 'p2',
-    pacienteNombre: 'María García López',
-    clasificacion: 'moderado',
-    nivelTriage: 3,
-    estado: 'entrante',
-    tipo: 'consulta',
-    sintomasIniciales: ['Dolor articular', 'Inflamación'],
-    descripcion: 'Me duelen las articulaciones de las manos y están hinchadas. Ya no puedo ni agarrar cosas.',
-    horaInicio: new Date('2025-04-16T11:00:00')
-  },
-  {
-    id: 'll3',
     pacienteId: 'p3',
     pacienteNombre: 'José Martínez Hernández',
     clasificacion: 'grave',
     nivelTriage: 1,
     estado: 'escalada',
     tipo: 'emergencia',
-    sintomasIniciales: ['Dificultad respiratoria', 'Color azulado en labios'],
-    descripcion: 'No puedo respirar bien, me estoy ahogando. Tengo enfermedad del corazón.',
-    duracion: 90,
-    resumenIA: 'Paciente masculino de 76 años con disnea severa y cianosis. Historia de insuficiencia cardíaca y EPOC. CLASIFICADO COMO CRÍTICO - requiere envío inmediato de emergencia.',
-    horaInicio: new Date('2025-04-16T09:15:00'),
-    horaEscalada: new Date('2025-04-16T09:30:00'),
+    sintomasIniciales: ['Dificultad respiratoria severa', 'Labios azules', 'Dolor torácico'],
+    descripcion: 'No puedo respirar, me estoy ahogando. Me duele mucho el pecho y no me alcanza el aire.',
+    duracion: 420,
+    resumenIA: 'Varón 76a con disnea severa, cianosis peribucal + dolor torácico. HF: ICC clase IV, EPOC, Bypass 2010. Sat O2: 82%. ACLARACIÓN CRÍTICA - Requiere envío UVI inmediato.',
+    horaInicio: new Date(today.getTime() - 60 * 60 * 1000),
+    horaEscalada: new Date(today.getTime() - 45 * 60 * 1000),
     agenteEspecializado: 'cardio'
+  },
+  {
+    id: 'll3',
+    pacienteId: 'p2',
+    pacienteNombre: 'María García López',
+    clasificacion: 'moderado',
+    nivelTriage: 3,
+    estado: 'resuelta',
+    tipo: 'consulta',
+    sintomasIniciales: ['Dolor articular', 'Inflamación manos', 'Rigidez matutina'],
+    descripcion: 'Me duelen mucho las articulaciones de las manos, se me hinchan mucho los dedos y no puedo agarrar nada. Ya tengo 3 semanas así.',
+    duracion: 900,
+    resumenIA: 'Mujer 66a con artralgias + tumefacción articular proximal MF/IF + rigidez >30min. Sin fiebre. Sospecha Artritis Reumatoide. Derivar Reumatología.',
+    horaInicio: new Date(today.getTime() - 3 * 60 * 60 * 1000),
+    horaFin: new Date(today.getTime() - 2.5 * 60 * 60 * 1000)
   },
   {
     id: 'll4',
@@ -157,14 +164,11 @@ export const LLAMADAS_MOCK: Llamada[] = [
     pacienteNombre: 'Ana Rodríguez Sánchez',
     clasificacion: 'leve',
     nivelTriage: 4,
-    estado: 'resuelta',
+    estado: 'entrante',
     tipo: 'consulta',
-    sintomasIniciales: ['Estornudos', 'Congestión nasal'],
-    descripcion: 'Tengo alergias, estornudosconstantemente y la nariz tapada.',
-    duracion: 300,
-    resumenIA: 'Síntomas alérgicos típicos. Sin signos de alarma. Recomendación: continuar antihistamínicos y evitar alergenos.',
-    horaInicio: new Date('2025-04-15T16:00:00'),
-    horaFin: new Date('2025-04-15T16:05:00')
+    sintomasIniciales: ['Estornudos', 'Congestión nasal', 'Ojos llorosos'],
+    descripcion: 'Tengo mucha alergia, estornudo todo el tiempo y los ojos me lloran. Es temporada de polen.',
+    horaInicio: new Date(today.getTime() - 30 * 60 * 1000)
   },
   {
     id: 'll5',
@@ -172,11 +176,41 @@ export const LLAMADAS_MOCK: Llamada[] = [
     pacienteNombre: 'Pedro González Torres',
     clasificacion: 'normal',
     nivelTriage: 5,
-    estado: 'entrante',
+    estado: 'resuelta',
     tipo: 'seguimiento',
     sintomasIniciales: [],
-    descripcion: 'Quiero saber si ya puedo ir a consulta con el retinólogo.',
-    horaInicio: new Date('2025-04-16T11:30:00')
+    descripcion: 'Hola, vine a seguimiento de mi diabetes. Quería saber si me pueden hacer la prueba de la vista.',
+    duracion: 600,
+    resumenIA: 'Seguimiento DM2.Última HbA1c: 7.2%. Solicitar fondo de ojo. Continuar Glucomet + Insulina NPH.',
+    horaInicio: new Date(today.getTime() - 5 * 60 * 60 * 1000),
+    horaFin: new Date(today.getTime() - 4.5 * 60 * 60 * 1000)
+  },
+  {
+    id: 'll6',
+    pacienteId: 'p1',
+    pacienteNombre: 'Juan Pérez García',
+    clasificacion: 'normal',
+    nivelTriage: 5,
+    estado: 'resuelta',
+    tipo: 'consulta',
+    sintomasIniciales: ['Molestia faríngea'],
+    descripcion: 'Me-arita un poco la garganta, pero no tengo fiebre.',
+    duracion: 420,
+    resumenIA: 'Faringitis viral sin signos de alarma. Sintomáticos + hidratación.',
+    horaInicio: new Date(yesterday.getTime() + 10 * 60 * 60 * 1000),
+    horaFin: new Date(yesterday.getTime() + 10.25 * 60 * 60 * 1000)
+  },
+  {
+    id: 'll7',
+    pacienteId: 'p2',
+    pacienteNombre: 'María García López',
+    clasificacion: 'normal',
+    nivelTriage: 5,
+    estado: 'cancelada',
+    tipo: 'consulta',
+    sintomasIniciales: [],
+    descripcion: 'Llamé para preguntar si aceptan nuevo paciente.',
+    horaInicio: new Date(yesterday.getTime() + 14 * 60 * 60 * 1000)
   }
 ];
 

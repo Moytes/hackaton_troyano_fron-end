@@ -3,12 +3,14 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  background: var(--bg-primary);
 }
 
 .app-body {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .main-content {
@@ -16,19 +18,23 @@
   overflow: auto;
   background: var(--bg-primary);
   padding: var(--spacing-lg);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 0;
 }
 
 .main-content.full-width {
   padding: 0;
+  overflow: auto;
 }
 
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
   z-index: 150;
-  animation: fade-in 0.3s ease;
+  animation: fade-in 0.25s ease;
+  cursor: pointer;
 }
 
 @keyframes fade-in {
@@ -36,6 +42,7 @@
   to { opacity: 1; }
 }
 
+/* Responsive content padding */
 @media (max-width: 768px) {
   .main-content {
     padding: var(--spacing-md);
@@ -43,5 +50,21 @@
   
   .main-content.full-width {
     padding: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    padding: var(--spacing-xl);
+  }
+}
+
+@media (min-width: 1200px) {
+  .main-content {
+    padding: var(--spacing-xl);
+  }
+  
+  .app-body {
+    padding-left: 0;
   }
 }
