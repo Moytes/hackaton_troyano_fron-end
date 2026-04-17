@@ -1,140 +1,296 @@
 <div class="landing">
+  <!-- Parallax Background Layers -->
+  <div class="parallax-bg">
+    <div class="parallax-layer layer-1" data-speed="0.3"></div>
+    <div class="parallax-layer layer-2" data-speed="0.5"></div>
+    <div class="parallax-layer layer-3" data-speed="0.7"></div>
+  </div>
+
   <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <div class="logo">
-        <span class="logo-icon">🏥</span>
-        <span class="logo-text">TeleAsistencia Sierra</span>
-      </div>
-      <h1>Atención médica inteligente para la Sierra de Querétaro</h1>
-      <p class="tagline">Sistema de telemedicina con IA que responde llamadas y WhatsApp para dar atención médica inmediata a la población de la Sierra de Querétaro.</p>
-      
-      <div class="hero-buttons">
-        <a routerLink="/login" pButton label="🔐 Iniciar Sesión" class="btn-primary"></a>
-      </div>
-    </div>
-    
-    <div class="hero-image">
-      <div class="image-placeholder">
-        <span>📱</span>
-        <p>WhatsApp + IA</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Problema -->
-  <section class="problema">
-    <h2>💙 ¿Por qué TeleAsistencia?</h2>
-    <div class="problema-cards">
-      <div class="problema-card">
-        <span class="icon">👴</span>
-        <h3>Para adultos mayores</h3>
-        <p>Muchas personas en la Sierra no tienen smartphones avanzados. WhatsApp es más accesible.</p>
-      </div>
-      <div class="problema-card">
-        <span class="icon">🏔️</span>
-        <h3>Zonas rurales</h3>
-        <p>La Sierra de Querétaro tiene comunidades alejadas. Este sistema lleva la salud a donde esté.</p>
-      </div>
-      <div class="problema-card">
-        <span class="icon">⏰</span>
-        <h3>Atención 24/7</h3>
-        <p>La IA responde a cualquier hora, los 365 días del año. Nunca hay que esperar.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Cómo funciona -->
-  <section class="como-funciona">
-    <h2>⚙️ ¿Cómo funciona?</h2>
-    <div class="pasos">
-      @for (paso of pasos; track paso.numero) {
-        <div class="paso">
-          <div class="paso-numero">{{ paso.numero }}</div>
-          <div class="paso-icono">{{ paso.icono }}</div>
-          <h3>{{ paso.titulo }}</h3>
-          <p>{{ paso.descripcion }}</p>
+  <section class="hero" id="hero">
+    <div class="hero-container">
+      <div class="hero-content" data-animate="fade-up">
+        <div class="hero-badge" data-animate="fade-scale" data-delay="100">
+          <span class="badge-dot"></span>
+          <span>Telemedicina del Futuro</span>
         </div>
-      }
+        
+        <div class="hero-logo" data-animate="fade-up" data-delay="200">
+          <div class="logo-icon">
+            <i class="pi pi-heart-fill"></i>
+          </div>
+          <div class="logo-text">
+            <span class="logo-name">TeleAsistencia</span>
+            <span class="logo-region">Sierra de Querétaro</span>
+          </div>
+        </div>
+
+        <h1 class="hero-title" data-animate="fade-up" data-delay="300">
+          Atención médica inteligente
+          <span class="highlight">para todos</span>
+        </h1>
+        
+        <p class="hero-description" data-animate="fade-up" data-delay="400">
+          Sistema de telemedicina con IA que responde llamadas y WhatsApp 
+          para dar atención médica inmediata a la población de la Sierra de Querétaro.
+        </p>
+        
+        <div class="hero-actions" data-animate="fade-up" data-delay="500">
+          <a routerLink="/login" class="btn-primary">
+            <i class="pi pi-sign-in"></i>
+            <span>Iniciar Sesión</span>
+          </a>
+          <a href="#funciona" class="btn-secondary">
+            <i class="pi pi-play"></i>
+            <span>Ver cómo funciona</span>
+          </a>
+        </div>
+
+        <div class="hero-stats" data-animate="fade-up" data-delay="600">
+          <div class="stat-item">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">IA Disponible</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">365</span>
+            <span class="stat-label">Días del año</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">Cobertura</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual" data-animate="fade-scale" data-delay="400">
+        <div class="phone-mockup">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="chat-bubble bot">
+                <div class="bubble-content">
+                  <i class="pi pi-heart"></i>
+                  <span>Hola, soy tu asistente de salud. ¿En qué puedo ayudarte?</span>
+                </div>
+                <span class="bubble-time">Ahora</span>
+              </div>
+              <div class="chat-bubble user">
+                <div class="bubble-content">
+                  <span>Tengo dolor en el pecho</span>
+                </div>
+                <span class="bubble-time">Ahora</span>
+              </div>
+              <div class="chat-bubble bot emergency">
+                <div class="bubble-content">
+                  <i class="pi pi-exclamation-triangle"></i>
+                  <span>Entiendo. Clasifico esta llamada como <strong>EMERGENCIA</strong>. Derivando...</span>
+                </div>
+                <span class="bubble-time">Ahora</span>
+              </div>
+              <div class="typing-indicator">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <div class="phone-notch"></div>
+          </div>
+          <div class="floating-element element-1">
+            <i class="pi pi-whatsapp"></i>
+          </div>
+          <div class="floating-element element-2">
+            <i class="pi pi-microphone"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator" data-animate="fade-up" data-delay="800">
+      <span>Scroll para explorar</span>
+      <div class="mouse">
+        <div class="wheel"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Por qué TeleAsistencia -->
+  <section class="features-section" id="por-que">
+    <div class="section-container">
+      <div class="section-header" data-animate="fade-up">
+        <span class="section-tag">¿Por qué nosotros?</span>
+        <h2 class="section-title">La salud llega a donde estés</h2>
+        <p class="section-subtitle">Llevamos atención médica de calidad a las comunidades más apartadas de la Sierra</p>
+      </div>
+
+      <div class="feature-cards">
+        @for (card of featureCards; track card.title; let i = $index) {
+          <div class="feature-card" data-animate="fade-up" [attr.data-delay]="i * 100">
+            <div class="card-icon">
+              <i [class]="card.icon"></i>
+            </div>
+            <div class="card-glow"></div>
+            <h3>{{ card.title }}</h3>
+            <p>{{ card.description }}</p>
+            <div class="card-arrow">
+              <i class="pi pi-arrow-right"></i>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="section-divider">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,44.5,600,48.28c110.54,4.81,208.11,23.8,283.27,36.85,60.76,10.35,118.77-3.37,177.79,12.3,48.53,12.93,87.81,26.85,120.24,46.31V0Z" opacity=".25"></path>
+        <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,21.17,16.89,38.57,38.48,48.11,63.59V0Z" opacity=".5"></path>
+        <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Cómo Funciona -->
+  <section class="steps-section" id="funciona">
+    <div class="section-container">
+      <div class="section-header" data-animate="fade-up">
+        <span class="section-tag">Proceso</span>
+        <h2 class="section-title">¿Cómo funciona?</h2>
+        <p class="section-subtitle">En solo 4 pasos, tu paciente recibe la atención que necesita</p>
+      </div>
+
+      <div class="steps-container">
+        @for (paso of pasos; track paso.numero; let i = $index) {
+          <div class="step-card" data-animate="fade-up" [attr.data-delay]="i * 150">
+            <div class="step-number">
+              <span>{{ paso.numero }}</span>
+            </div>
+            <div class="step-icon">
+              <i [class]="paso.icon"></i>
+            </div>
+            <h3>{{ paso.titulo }}</h3>
+            <p>{{ paso.descripcion }}</p>
+            @if (i < pasos.length - 1) {
+              <div class="step-connector">
+                <svg viewBox="0 0 100 20">
+                  <path d="M0,10 Q50,0 100,10" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+            }
+          </div>
+        }
+      </div>
     </div>
   </section>
 
   <!-- Características -->
-  <section class="caracteristicas">
-    <h2>✨ Características</h2>
-    <div class="features-grid">
-      @for (car of caracteristicas; track car.label) {
-        <div class="feature-item">
-          <i [class]="car.icon"></i>
-          <div class="feature-text">
-            <h4>{{ car.label }}</h4>
-            <p>{{ car.descripcion }}</p>
+  <section class="characteristics-section">
+    <div class="section-container">
+      <div class="section-header" data-animate="fade-up">
+        <span class="section-tag">Funcionalidades</span>
+        <h2 class="section-title">Todo lo que necesitas</h2>
+        <p class="section-subtitle">Herramientas poderosas para una atención médica excepcional</p>
+      </div>
+
+      <div class="characteristics-grid">
+        @for (car of caracteristicas; track car.label; let i = $index) {
+          <div class="char-item" data-animate="fade-up" [attr.data-delay]="i * 80">
+            <div class="char-icon">
+              <i [class]="car.icon"></i>
+            </div>
+            <div class="char-content">
+              <h4>{{ car.label }}</h4>
+              <p>{{ car.descripcion }}</p>
+            </div>
           </div>
-        </div>
-      }
-    </div>
-  </section>
-
-  <!-- Clasificación por gravedad -->
-  <section class="clasificacion">
-    <h2>🚨 Sistema de Clasificación</h2>
-    <p class="section-desc">La IA clasifica cada llamada según la urgencia médica:</p>
-    <div class="gravedad-grid">
-      <div class="gravedad-card grave">
-        <span class="dot"></span>
-        <h3>Grave</h3>
-        <p>Requiere atención inmediata</p>
-      </div>
-      <div class="gravedad-card moderado">
-        <span class="dot"></span>
-        <h3>Moderado</h3>
-        <p>Atender pronto</p>
-      </div>
-      <div class="gravedad-card leve">
-        <span class="dot"></span>
-        <h3>Leve</h3>
-        <p>Revisar después</p>
-      </div>
-      <div class="gravedad-card normal">
-        <span class="dot"></span>
-        <h3>Normal</h3>
-        <p>Consulta general</p>
+        }
       </div>
     </div>
   </section>
 
-  <!-- Público objetivo -->
-  <section class="publico">
-    <h2>👥 Público Objetivo</h2>
-    <div class="publico-cards">
-      <div class="publico-card">
-        <span class="icon">👴</span>
-        <h3>Adultos mayores</h3>
-        <p>Personas de 60+ años en comunidades de la Sierra</p>
+  <!-- Sistema de Clasificación -->
+  <section class="triage-section">
+    <div class="section-container">
+      <div class="section-header" data-animate="fade-up">
+        <span class="section-tag">Inteligencia Artificial</span>
+        <h2 class="section-title">Clasificación Inteligente</h2>
+        <p class="section-subtitle">La IA evalúa y clasifica cada llamada según su nivel de urgencia</p>
       </div>
-      <div class="publico-card">
-        <span class="icon">👨‍👩‍👧</span>
-        <h3>Familiares</h3>
-        <p>Cuidadores y familiares que buscan atención</p>
+
+      <div class="triage-grid">
+        @for (nivel of nivelesTriage; track nivel.nivel; let i = $index) {
+          <div class="triage-card" [class]="'triage-' + nivel.nivel" data-animate="fade-up" [attr.data-delay]="i * 100">
+            <div class="triage-indicator">
+              <span class="pulse-dot"></span>
+            </div>
+            <div class="triage-icon">
+              <i [class]="nivel.icon"></i>
+            </div>
+            <h3>{{ nivel.nivel }}</h3>
+            <p>{{ nivel.descripcion }}</p>
+            <span class="triage-badge">{{ nivel.tiempo }}</span>
+          </div>
+        }
       </div>
-      <div class="publico-card">
-        <span class="icon">👩‍⚕️</span>
-        <h3>Personal de salud</h3>
-        <p>Enfermeros y doctores en comunidades rurales</p>
+    </div>
+  </section>
+
+  <!-- Público Objetivo -->
+  <section class="audience-section">
+    <div class="section-container">
+      <div class="section-header" data-animate="fade-up">
+        <span class="section-tag">Para quién es</span>
+        <h2 class="section-title">Dirigido a todos</h2>
       </div>
+
+      <div class="audience-cards">
+        @for (publico of publicoObjetivo; track publico.nombre; let i = $index) {
+          <div class="audience-card" data-animate="fade-scale" [attr.data-delay]="i * 100">
+            <div class="audience-icon">
+              <i [class]="publico.icon"></i>
+            </div>
+            <h3>{{publico.nombre }}</h3>
+            <p>{{publico.descripcion }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="section-divider inverted">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,44.5,600,48.28c110.54,4.81,208.11,23.8,283.27,36.85,60.76,10.35,118.77-3.37,177.79,12.3,48.53,12.93,87.81,26.85,120.24,46.31V0Z" opacity=".25"></path>
+        <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,21.17,16.89,38.57,38.48,48.11,63.59V0Z" opacity=".5"></path>
+        <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"></path>
+      </svg>
     </div>
   </section>
 
   <!-- CTA Final -->
-  <section class="cta-final">
-    <h2>¿Listo para comenzar?</h2>
-    <p>Accede al portal de profesionales para gestionar llamadas y atender pacientes.</p>
-    <a routerLink="/login" pButton label="🔐 Iniciar Sesión" class="btn-large"></a>
+  <section class="cta-section">
+    <div class="cta-glow"></div>
+    <div class="section-container">
+      <div class="cta-content" data-animate="fade-scale">
+        <h2>¿Listo para transformar la atención médica?</h2>
+        <p>Accede al portal de profesionales y comienza a atender a tus pacientes con la ayuda de IA</p>
+        <a routerLink="/login" class="btn-cta">
+          <i class="pi pi-sign-in"></i>
+          <span>Iniciar Sesión</span>
+        </a>
+      </div>
+    </div>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
-    <p>© 2025 TeleAsistencia Sierra - Hackatón Querétaro</p>
-    <p class="tagline">💙 Telemedicina para todos</p>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <i class="pi pi-heart-fill"></i>
+          <span>TeleAsistencia Sierra</span>
+        </div>
+        <p>Telemedicina con inteligencia artificial para la Sierra de Querétaro</p>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 TeleAsistencia Sierra - Hackatón Querétaro</p>
+        <p class="footer-tagline">Telemedicina para todos</p>
+      </div>
+    </div>
   </footer>
 </div>
