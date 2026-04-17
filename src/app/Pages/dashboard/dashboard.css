@@ -1,0 +1,436 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: 350px 1fr 320px;
+  gap: var(--spacing-lg);
+  height: calc(100vh - 64px - 48px);
+  overflow: hidden;
+}
+
+.panel {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 10;
+}
+
+.panel-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.panel-header .count {
+  background: var(--primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+/* Panel 1: Lista de Llamadas */
+.panel-llamadas {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-box {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.search-box .p-inputtext {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--radius-md);
+}
+
+.search-box i {
+  color: var(--text-secondary);
+}
+
+.filtros-gravedad {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.filtro-btn {
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filtro-btn.active {
+  background: var(--bg-secondary) !important;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot.grave { background: var(--grave); }
+.dot.moderado { background: var(--moderado); }
+.dot.leve { background: var(--leve); }
+
+.lista-llamadas {
+  flex: 1;
+  overflow: auto;
+  padding: var(--spacing-sm);
+}
+
+.llamada-item {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: var(--spacing-xs);
+}
+
+.llamada-item:hover {
+  background: var(--bg-secondary);
+}
+
+.llamada-item.seleccionada {
+  background: rgba(13, 148, 136, 0.1);
+  border: 2px solid var(--primary);
+}
+
+.llamada-indicator {
+  width: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.llamada-indicator.grave { background: var(--grave); }
+.llamada-indicator.moderado { background: var(--moderado); }
+.llamada-indicator.leve { background: var(--leve); }
+.llamada-indicator.normal { background: var(--normal); }
+
+.llamada-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.llamada-nombre {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.llamada-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.llamada-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hora {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.gravedad-tag {
+  font-size: 10px;
+}
+
+.no-llamadas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+}
+
+.no-llamadas i {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Panel 2: Detalle */
+.panel-detalle {
+  padding: var(--spacing-lg);
+}
+
+.detalle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.detalle-header h2 {
+  font-size: 20px;
+}
+
+.clasificacion-tag {
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+.detalle-paciente {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.avatar-paciente {
+  background: var(--primary) !important;
+  color: white !important;
+  font-size: 24px !important;
+}
+
+.paciente-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.paciente-info .tipo {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.sintomas-panel,
+.resumen-panel {
+  margin-bottom: var(--spacing-md);
+}
+
+.sintomas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.sintoma-tag {
+  background: var(--bg-secondary);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.descripcion {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+}
+
+.acciones .p-button {
+  justify-content: flex-start;
+  min-height: 48px;
+}
+
+.p-button-help {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+.p-button-help:hover {
+  background: #1d4ed8 !important;
+}
+
+.no-seleccion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+.no-seleccion i {
+  font-size: 64px;
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.3;
+}
+
+/* Panel 3: Perfil */
+.panel-perfil {
+  padding: var(--spacing-lg);
+}
+
+.perfil-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.perfil-header h2 {
+  font-size: 18px;
+}
+
+.info-panel,
+.enfermedades-panel,
+.alergias-panel,
+.historial-panel {
+  margin-bottom: var(--spacing-sm);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xs) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row .label {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.info-row .value {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.tipo-sangre {
+  background: var(--danger);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+.chips-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+}
+
+.chip.disease {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--danger);
+}
+
+.chip.allergy {
+  background: rgba(234, 88, 12, 0.1);
+  color: var(--moderado);
+}
+
+.historial-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.historial-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) 0;
+}
+
+.mini-tag {
+  font-size: 10px;
+  padding: 2px 6px;
+}
+
+.historial-fecha {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.historial-tipo {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-left: auto;
+}
+
+.no-perfil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+.no-perfil i {
+  font-size: 64px;
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.3;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .dashboard {
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  
+  .panel-perfil {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+  }
+  
+  .panel-llamadas {
+    max-height: 300px;
+  }
+  
+  .panel-detalle {
+    min-height: 400px;
+  }
+}

@@ -1,0 +1,44 @@
+<div class="agentes-page">
+  <div class="page-header">
+    <h1>Agentes Especializados</h1>
+  </div>
+  
+  <div class="section">
+    <h2>Agente Principal</h2>
+    <div class="agente-principal">
+      <div class="agente-avatar large">
+        <span>🤖</span>
+      </div>
+      <div class="agente-info">
+        <h3>IA Asistente Médico</h3>
+        <p>Asistente médico general para consultas y emergencias. Available 24/7 para atención inmediata.</p>
+        <button pButton label="Iniciar Chat" icon="pi pi-comments" routerLink="/chat"></button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2>Agentes Especializados</h2>
+    <div class="agentes-grid">
+      @for (agente of agentes; track agente.id) {
+        @if (agente.tipo !== 'general') {
+          <div class="agente-card" [class.inactive]="!agente.activo">
+            <div class="agente-icono">
+              <span>{{ getIcon(agente.icono) }}</span>
+            </div>
+            <div class="agente-details">
+              <h3>{{ agente.nombre }}</h3>
+              <span class="especialidad">{{ agente.especialdad }}</span>
+              <p>{{ agente.descripcion }}</p>
+              @if (agente.activo) {
+                <button pButton label="Activar" class="p-button-outlined" (click)="activarAgente(agente)"></button>
+              } @else {
+                <p-tag value="Próximamente" severity="info"></p-tag>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

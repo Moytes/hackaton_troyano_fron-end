@@ -1,0 +1,95 @@
+.llamadas-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.page-header h1 {
+  font-size: 28px;
+}
+
+.filtros {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.filtros .p-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.grave { background: var(--grave); }
+.dot.moderado { background: var(--moderado); }
+.dot.leve { background: var(--leve); }
+
+.llamadas-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.llamada-card {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.llamada-card:hover {
+  border-color: var(--primary);
+}
+
+.llamada-card .indicator {
+  width: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.llamada-card .indicator.grave { background: var(--grave); }
+.llamada-card .indicator.moderado { background: var(--moderado); }
+.llamada-card .indicator.leve { background: var(--leve); }
+.llamada-card .indicator.normal { background: var(--normal); }
+
+.llamada-card .content {
+  flex: 1;
+}
+
+.llamada-card .content h3 {
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.llamada-card .content p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.llamada-card .meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.llamada-card .meta .hora {
+  font-size: 13px;
+  color: var(--text-secondary);
+}

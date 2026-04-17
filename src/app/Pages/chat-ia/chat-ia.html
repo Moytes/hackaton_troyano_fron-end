@@ -1,1 +1,100 @@
-<p>chat-ia works!</p>
+<div class="chat-container">
+  <!-- Selector de Llamada -->
+  <div class="chat-sidebar">
+    <div class="sidebar-header">
+      <h3>Conversaciones</h3>
+    </div>
+    <div class="llamada-list">
+      @for (llamada of llamadas(); track llamada.id) {
+        <div 
+          class="llamada-item"
+          [class.active]="seleccionadaLlamadaId() === llamada.id"
+          (click)="selectLlamada(llamada.id)">
+          <p-avatar [label]="llamada.pacienteNombre.charAt(0)" shape="circle"></p-avatar>
+          <div class="llamada-info">
+            <span class="nombre">{{ llamada.pacienteNombre }}</span>
+            <span class="preview">{{ llamada.descripcion | slice:0:30 }}...</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+  
+  <!-- Área de Chat -->
+  <div class="chat-main">
+    <div class="chat-header">
+      <div class="header-info">
+        <p-avatar 
+          [label]="llamadaActual()?.pacienteNombre?.charAt(0) || '?'" 
+          size="large" 
+          shape="circle"
+          styleClass="avatar-ia">
+        </p-avatar>
+        <div class="header-text">
+          <h3>{{ llamadaActual()?.pacienteNombre || 'Selecciona una conversación' }}</h3>
+          <span class="status">🤖 IA Asistente Activo</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chat-messages" #chatContainer>
+      @for (msg of mensajes(); track msg.id) {
+        <div class="message" [class]="msg.remitente">
+          <div class="message-avatar">
+            @if (msg.remitente === 'ia') {
+              <p-avatar label="🤖" shape="circle" styleClass="avatar-bot"></p-avatar>
+            } @else {
+              <p-avatar [label]="msg.contenido.charAt(0).toUpperCase()" shape="circle"></p-avatar>
+            }
+          </div>
+          <div class="message-bubble">
+            <p>{{ msg.contenido }}</p>
+            <span class="timestamp">{{ formatHora(msg.timestamp) }}</span>
+          </div>
+        </div>
+      }
+      
+      @if (escribiendo()) {
+        <div class="message ia">
+          <div class="message-avatar">
+            <p-avatar label="🤖" shape="circle" styleClass="avatar-bot"></p-avatar>
+          </div>
+          <div class="message-bubble typing">
+            <span>Escribiendo</span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      }
+    </div>
+    
+    <div class="chat-suggestions">
+      @for (sug of sugerencias; track sug) {
+        <button 
+          pButton 
+          class="p-button-outlined p-button-sm suggestion-btn"
+          (click)="usarSugerencia(sug)">
+          {{ sug }}
+        </button>
+      }
+    </div>
+    
+    <div class="chat-input">
+      <input 
+        type="text" 
+        pInputText 
+        [(ngModel)]="mensajeActual"
+        (keydown)="onKeyDown($event)"
+        placeholder="Escribe tu mensaje..."
+        class="mensaje-input">
+      <button 
+        pButton 
+        icon="pi pi-send" 
+        (click)="enviarMensaje()"
+        [disabled]="!mensajeActual()"
+        class="send-btn">
+      </button>
+    </div>
+  </div>
+</div>

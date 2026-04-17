@@ -1,0 +1,52 @@
+<div class="detalle-page">
+  @if (llamada()) {
+    <div class="page-header">
+      <a routerLink="/dashboard" class="back-link">
+        <i class="pi pi-arrow-left"></i> Volver
+      </a>
+    </div>
+    
+    <div class="detalle-header">
+      <div class="clasificacion">
+        <p-tag [value]="getLabel(llamada()!.clasificacion)" [severity]="getSeverity(llamada()!.clasificacion)" class="clasificacion-tag"></p-tag>
+      </div>
+      <h1>{{ llamada()!.pacienteNombre }}</h1>
+      <span class="tipo">{{ llamada()!.tipo | titlecase }} - {{ formatHora(llamada()!.horaInicio) }}</span>
+    </div>
+    
+    <div class="paciente-card">
+      <p-avatar [label]="llamada()!.pacienteNombre.charAt(0)" size="xlarge" shape="circle" styleClass="avatar-paciente"></p-avatar>
+      <div class="info">
+        <h2>{{ llamada()!.pacienteNombre }}</h2>
+        <p>{{ paciente()?.edad }} años • {{ paciente()?.comunidad }}</p>
+      </div>
+    </div>
+    
+    <p-panel header="Síntomas" [toggleable]="true" class="panel-sintomas">
+      <div class="sintomas-list">
+        @for (sintoma of llamada()!.sintomasIniciales; track sintoma) {
+          <span class="sintoma-tag">{{ sintoma }}</span>
+        }
+      </div>
+      <p class="descripcion">{{ llamada()!.descripcion }}</p>
+    </p-panel>
+    
+    @if (llamada()!.resumenIA) {
+      <p-panel header="Análisis IA" [toggleable]="true" class="panel-analisis">
+        <p>{{ llamada()!.resumenIA }}</p>
+      </p-panel>
+    }
+    
+    <div class="acciones">
+      <button pButton label="Transferir" icon="pi pi-user-plus" class="p-button-outlined"></button>
+      <button pButton label="Agendar cita" icon="pi pi-calendar" routerLink="/citas"></button>
+      <button pButton label="Iniciar chat" icon="pi pi-comments" routerLink="/chat"></button>
+    </div>
+  } @else {
+    <div class="no-found">
+      <i class="pi pi-exclamation-circle"></i>
+      <p>Llamada no encontrada</p>
+      <a routerLink="/dashboard" pButton label="Volver al dashboard"></a>
+    </div>
+  }
+</div>

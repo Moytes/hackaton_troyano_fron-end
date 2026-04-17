@@ -1,0 +1,119 @@
+.detalle-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.back-link:hover {
+  color: var(--primary);
+}
+
+.detalle-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.clasificacion-tag {
+  font-size: 14px;
+  padding: 8px 16px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.detalle-header h1 {
+  font-size: 28px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.detalle-header .tipo {
+  color: var(--text-secondary);
+}
+
+.paciente-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.avatar-paciente {
+  background: var(--primary) !important;
+  color: white !important;
+  font-size: 24px !important;
+}
+
+.paciente-card h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.paciente-card p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.panel-sintomas,
+.panel-analisis {
+  margin-bottom: var(--spacing-md);
+}
+
+.sintomas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.sintoma-tag {
+  background: var(--bg-secondary);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+}
+
+.descripcion {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.acciones {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-lg);
+}
+
+.acciones .p-button {
+  flex: 1;
+  min-width: 150px;
+}
+
+.no-found {
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+
+.no-found i {
+  font-size: 64px;
+  color: var(--text-secondary);
+  opacity: 0.3;
+  margin-bottom: var(--spacing-md);
+}
+
+.no-found p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+}

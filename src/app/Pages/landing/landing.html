@@ -1,1 +1,140 @@
-<p>landing works!</p>
+<div class="landing">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="logo">
+        <span class="logo-icon">🏥</span>
+        <span class="logo-text">TeleAsistencia Sierra</span>
+      </div>
+      <h1>Atención médica inteligente para la Sierra de Querétaro</h1>
+      <p class="tagline">Sistema de telemedicina con IA que responde llamadas y WhatsApp para dar atención médica inmediata a la población de la Sierra de Querétaro.</p>
+      
+      <div class="hero-buttons">
+        <a routerLink="/dashboard" pButton label="🚀 Ir al Dashboard" class="btn-primary"></a>
+      </div>
+    </div>
+    
+    <div class="hero-image">
+      <div class="image-placeholder">
+        <span>📱</span>
+        <p>WhatsApp + IA</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problema -->
+  <section class="problema">
+    <h2>💙 ¿Por qué TeleAsistencia?</h2>
+    <div class="problema-cards">
+      <div class="problema-card">
+        <span class="icon">👴</span>
+        <h3>Para adultos mayores</h3>
+        <p>Muchas personas en la Sierra no tienen smartphones avanzados. WhatsApp es más accesible.</p>
+      </div>
+      <div class="problema-card">
+        <span class="icon">🏔️</span>
+        <h3>Zonas rurales</h3>
+        <p>La Sierra de Querétaro tiene comunidades alejadas. Este sistema lleva la salud a donde esté.</p>
+      </div>
+      <div class="problema-card">
+        <span class="icon">⏰</span>
+        <h3>Atención 24/7</h3>
+        <p>La IA responde a cualquier hora, los 365 días del año. Nunca hay que esperar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cómo funciona -->
+  <section class="como-funciona">
+    <h2>⚙️ ¿Cómo funciona?</h2>
+    <div class="pasos">
+      @for (paso of pasos; track paso.numero) {
+        <div class="paso">
+          <div class="paso-numero">{{ paso.numero }}</div>
+          <div class="paso-icono">{{ paso.icono }}</div>
+          <h3>{{ paso.titulo }}</h3>
+          <p>{{ paso.descripcion }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Características -->
+  <section class="caracteristicas">
+    <h2>✨ Características</h2>
+    <div class="features-grid">
+      @for (car of caracteristicas; track car.label) {
+        <div class="feature-item">
+          <i [class]="car.icon"></i>
+          <div class="feature-text">
+            <h4>{{ car.label }}</h4>
+            <p>{{ car.descripcion }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Clasificación por gravedad -->
+  <section class="clasificacion">
+    <h2>🚨 Sistema de Clasificación</h2>
+    <p class="section-desc">La IA clasifica cada llamada según la urgencia médica:</p>
+    <div class="gravedad-grid">
+      <div class="gravedad-card grave">
+        <span class="dot"></span>
+        <h3>Grave</h3>
+        <p>Requiere atención inmediata</p>
+      </div>
+      <div class="gravedad-card moderado">
+        <span class="dot"></span>
+        <h3>Moderado</h3>
+        <p>Atender pronto</p>
+      </div>
+      <div class="gravedad-card leve">
+        <span class="dot"></span>
+        <h3>Leve</h3>
+        <p>Revisar después</p>
+      </div>
+      <div class="gravedad-card normal">
+        <span class="dot"></span>
+        <h3>Normal</h3>
+        <p>Consulta general</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Público objetivo -->
+  <section class="publico">
+    <h2>👥 Público Objetivo</h2>
+    <div class="publico-cards">
+      <div class="publico-card">
+        <span class="icon">👴</span>
+        <h3>Adultos mayores</h3>
+        <p>Personas de 60+ años en comunidades de la Sierra</p>
+      </div>
+      <div class="publico-card">
+        <span class="icon">👨‍👩‍👧</span>
+        <h3>Familiares</h3>
+        <p>Cuidadores y familiares que buscan atención</p>
+      </div>
+      <div class="publico-card">
+        <span class="icon">👩‍⚕️</span>
+        <h3>Personal de salud</h3>
+        <p>Enfermeros y doctores en comunidades rurales</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+  <section class="cta-final">
+    <h2>¿Listo para comenzar?</h2>
+    <p>Accede al dashboard para gestionar llamadas y atender pacientes.</p>
+    <a routerLink="/dashboard" pButton label="🚀 Ir al Dashboard" class="btn-large"></a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2025 TeleAsistencia Sierra - Hackatón Querétaro</p>
+    <p class="tagline">💙 Telemedicina para todos</p>
+  </footer>
+</div>

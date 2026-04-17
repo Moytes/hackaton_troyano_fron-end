@@ -1,0 +1,237 @@
+.citas-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xl);
+}
+
+.page-header h1 {
+  font-size: 28px;
+}
+
+.section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section h2 {
+  font-size: 18px;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+.citas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.cita-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+}
+
+.cita-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.cita-info h3 {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.cita-info .especialidad {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.cita-fecha {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.cita-fecha i {
+  color: var(--primary);
+}
+
+.cita-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border);
+}
+
+.cita-footer .doctor {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.citas-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.cita-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.cita-item .cita-fecha {
+  min-width: 150px;
+  margin-bottom: 0;
+}
+
+.cita-item .cita-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cita-item .paciente {
+  font-weight: 500;
+}
+
+.cita-item .doctor {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.cita-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.empty-state i {
+  font-size: 64px;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.3;
+}
+
+.empty-state button {
+  margin-top: var(--spacing-md);
+}
+
+/* Dialog */
+.agendar-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.horarios-grid .p-button {
+  min-height: 48px;
+}
+
+@media (max-width: 768px) {
+  .citas-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cita-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog-content {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.dialog-header h2 {
+  font-size: 20px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--border);
+}
+
+.agendar-form {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+

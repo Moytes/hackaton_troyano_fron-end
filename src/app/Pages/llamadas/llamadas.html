@@ -1,0 +1,34 @@
+<div class="llamadas-page">
+  <div class="page-header">
+    <h1>Llamadas</h1>
+  </div>
+  
+  <div class="filtros">
+    <button pButton class="p-button-outlined" (click)="filtrar('grave')">
+      <span class="dot grave"></span> Grave ({{ graves().length }})
+    </button>
+    <button pButton class="p-button-outlined" (click)="filtrar('moderado')">
+      <span class="dot moderado"></span> Moderado ({{ moderados().length }})
+    </button>
+    <button pButton class="p-button-outlined" (click)="filtrar('leve')">
+      <span class="dot leve"></span> Leve ({{ leves().length }})
+    </button>
+    <button pButton class="p-button-outlined" (click)="filtrar('todas')">Todas</button>
+  </div>
+  
+  <div class="llamadas-list">
+    @for (llamada of llamadas(); track llamada.id) {
+      <a [routerLink]="['/llamada', llamada.id]" class="llamada-card">
+        <div class="indicator" [class]="llamada.clasificacion"></div>
+        <div class="content">
+          <h3>{{ llamada.pacienteNombre }}</h3>
+          <p>{{ llamada.descripcion }}</p>
+          <div class="meta">
+            <span class="hora">{{ formatHora(llamada.horaInicio) }}</span>
+            <p-tag [value]="getLabel(llamada.clasificacion)" [severity]="getSeverity(llamada.clasificacion)"></p-tag>
+          </div>
+        </div>
+      </a>
+    }
+  </div>
+</div>

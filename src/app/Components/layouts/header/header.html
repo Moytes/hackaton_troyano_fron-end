@@ -1,0 +1,64 @@
+<header class="header">
+  <div class="header-left">
+@if (mostrarToggle) {
+      <button 
+        pButton 
+        type="button" 
+        icon="pi pi-bars" 
+        class="p-button-text p-button-rounded menu-toggle"
+        (click)="menuToggle.emit()"
+        aria-label="toggle sidebar">
+      </button>
+      <button 
+        pButton 
+        type="button" 
+        icon="pi pi-angle-left" 
+        class="p-button-text p-button-rounded collapse-toggle"
+        (click)="toggleSidebar.emit()"
+        aria-label="collapse sidebar">
+      </button>
+      }
+    
+    <a routerLink="/" class="logo">
+      <span class="logo-icon">🏥</span>
+      <span class="logo-text">TeleAsistencia</span>
+    </a>
+  </div>
+  
+  <div class="header-center">
+    @if (mostrarToggle) {
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span class="status-text">Sistema activo</span>
+      </div>
+    }
+  </div>
+  
+  <div class="header-right">
+    @if (mostrarToggle) {
+      <button 
+        pButton 
+        type="button" 
+        icon="pi pi-bell" 
+        class="p-button-text p-button-rounded notification-btn"
+        routerLink="/alertas"
+        aria-label="Notificaciones">
+      </button>
+    }
+    
+    <div class="user-menu">
+      <p-avatar 
+        label="OP" 
+        shape="circle" 
+        size="large"
+        styleClass="user-avatar">
+      </p-avatar>
+      @if (mostrarToggle) {
+        <div class="user-info">
+          <span class="user-name">Operador</span>
+          <span class="user-role">Dashboard</span>
+        </div>
+      }
+    </div>
+  </div>
+</header>

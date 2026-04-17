@@ -1,0 +1,100 @@
+<div class="citas-page">
+  <div class="page-header">
+    <h1>Gestión de Citas</h1>
+    <button pButton label="Nueva Cita" icon="pi pi-plus" (click)="openAgendar()"></button>
+  </div>
+  
+  @if (proximas().length > 0) {
+    <div class="section">
+      <h2>Próximas citas</h2>
+      <div class="citas-grid">
+        @for (cita of proximas(); track cita.id) {
+          <div class="cita-card">
+            <div class="cita-header">
+              <p-avatar [label]="cita.pacienteNombre.charAt(0)" size="large" shape="circle"></p-avatar>
+              <div class="cita-info">
+                <h3>{{ cita.pacienteNombre }}</h3>
+                <span class="especialidad">{{ cita.especialidad }}</span>
+              </div>
+            </div>
+            <div class="cita-fecha">
+              <i class="pi pi-calendar"></i>
+              <span>{{ formatFecha(cita.fecha) }}</span>
+            </div>
+            <div class="cita-fecha">
+              <i class="pi pi-clock"></i>
+              <span>{{ formatHora(cita.fecha) }}</span>
+            </div>
+            <div class="cita-footer">
+              <span class="doctor">{{ cita.doctorNombre }}</span>
+              <p-tag [value]="cita.estado | titlecase" [severity]="getEstadoSeverity(cita.estado)"></p-tag>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+  
+  @if (citas().length === 0) {
+    <div class="empty-state">
+      <i class="pi pi-calendar"></i>
+      <p>No hay citas agendadas</p>
+      <button pButton label="Agendar primera cita" (click)="openAgendar()"></button>
+    </div>
+  }
+</div>
+
+@if (showAgendar()) {
+  <div class="dialog-overlay" (click)="closeAgendar()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Agendar Cita</h2>
+        <button pButton icon="pi pi-times" class="p-button-text" (click)="closeAgendar()"></button>
+      </div>
+      
+      <div class="agendar-form">
+        <div class="form-group">
+          <label>Seleccionar especialista</label>
+          <p-select 
+            [options]="opcionesDoctores"
+            [(ngModel)]="selectedDoctor"
+            placeholder="Elige un doctor"
+            optionLabel="label"
+            [style]="{width: '100%'}">
+          </p-select>
+        </div>
+        
+        <div class="form-group">
+          <label>Fecha</label>
+          <p-select 
+            [options]="opcionesFechas"
+            [(ngModel)]="selectedFecha"
+            placeholder="Elige fecha"
+            optionLabel="label"
+            [style]="{width: '100%'}">
+          </p-select>
+        </div>
+        
+        <div class="form-group">
+          <label>Horário</label>
+          <div class="horarios-grid">
+            @for (hora of opcionesHoras; track hora) {
+              <button 
+                pButton 
+                [label]="hora"
+                class="p-button-outlined"
+                [class.p-button-primary]="selectedHora() === hora"
+                (click)="selectedHora.set(hora)">
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+      
+      <div class="dialog-footer">
+        <button pButton label="Cancelar" class="p-button-text" (click)="closeAgendar()"></button>
+        <button pButton label="Confirmar Cita" (click)="agendar()" [disabled]="!selectedDoctor() || !selectedFecha() || !selectedHora()"></button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,40 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <div class="sidebar-header">
+    <div class="sidebar-title" *ngIf="!collapsed">
+      <span class="title-icon">🏥</span>
+      <span> TeleAsistencia</span>
+    </div>
+    <button 
+      pButton 
+      type="button" 
+      icon="pi pi-times" 
+      class="p-button-text p-button-rounded close-btn"
+      (click)="closeSidebar.emit()"
+      *ngIf="!collapsed"
+      aria-label="Close sidebar">
+    </button>
+  </div>
+  
+  <nav class="sidebar-nav">
+    @for (item of menuItems; track item.route) {
+      <a 
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="item.label">
+        <i [class]="item.icon"></i>
+        <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+        @if (item.badge && !collapsed) {
+          <p-badge [value]="item.badge.toString()" severity="danger" class="nav-badge"></p-badge>
+        }
+      </a>
+    }
+  </nav>
+  
+  <div class="sidebar-footer" *ngIf="!collapsed">
+    <div class="footer-info">
+      <span class="version">v1.0.0</span>
+      <span class="sierra">Sierra QR</span>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,68 @@
+<div class="ayuda-page">
+  <div class="page-header">
+    <h1>Botón de Emergencia Mioty</h1>
+  </div>
+  
+  <div class="info-banner">
+    <i class="pi pi-info-circle"></i>
+    <p>Este botón funciona sin necesidad de internet ni señal telefónica. Utiliza el protocolo Mioty para enviar alertas de emergencia a distancias de 5-10 km.</p>
+  </div>
+  
+  @if (mensajeEnviado()) {
+    <div class="success-message">
+      <i class="pi pi-check-circle"></i>
+      <h3>Alerta de emergencia enviada</h3>
+      <p>Tu ubicación ha sido compartida con los servicios de emergencia locales.</p>
+    </div>
+  } @else {
+    <div class="boton-emergencia">
+      <button 
+        class="emergency-button"
+        [class.enviando]="estado() === 'enviando'"
+        (click)="enviarEmergencia()"
+        [disabled]="estado() === 'enviando'">
+        <span class="icon">⚠️</span>
+        <span class="text">PULSAR EN CASO DE</span>
+        <span class="text">EMERGENCIA</span>
+      </button>
+    </div>
+  }
+  
+  <div class="status-card">
+    <h3>Estado de conexión</h3>
+    <div class="status-row">
+      <span class="label">Señal</span>
+      <span class="value">
+        @if (estado() === 'conectado') {
+          <span class="status-indicator online"></span> Fuerte
+        } @else if (estado() === 'enviando') {
+          <span class="status-indicator sending"></span> Enviando...
+        } @else {
+          <span class="status-indicator offline"></span> Sin conexión
+        }
+      </span>
+    </div>
+    <div class="status-row">
+      <span class="label">Ubicación</span>
+      <span class="value">Sierra de Querétaro</span>
+    </div>
+    <div class="status-row">
+      <span class="label">ID Dispositivo</span>
+      <span class="value">MIOTY-001</span>
+    </div>
+  </div>
+  
+  <div class="importante-card">
+    <h3>⚠️ Importante</h3>
+    <ul>
+      <li>Este botón funciona sin internet ni señal telefónica</li>
+      <li>Al pulsar, se envía tu ubicación exacta a los servicios de emergencia</li>
+      <li>El alcance es de 5 a 10 km línea de vista</li>
+      <li>Necesitas una antenna receptora cerca para funcionar</li>
+    </ul>
+  </div>
+  
+  <div class="experimental-badge">
+    <span>🧪 Funcionalidad experimental - Requiere hardware Mioty</span>
+  </div>
+</div>

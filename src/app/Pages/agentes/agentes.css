@@ -1,0 +1,131 @@
+.agentes-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.page-header h1 {
+  font-size: 28px;
+}
+
+.section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section h2 {
+  font-size: 18px;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+.agente-principal {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  background: var(--bg-card);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-lg);
+}
+
+.agente-avatar {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  font-size: 40px;
+}
+
+.agente-avatar.large {
+  width: 100px;
+  height: 100px;
+  font-size: 56px;
+}
+
+.agente-info {
+  flex: 1;
+}
+
+.agente-info h3 {
+  font-size: 22px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.agente-info p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.agentes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.agente-card {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.agente-card:hover {
+  border-color: var(--primary);
+}
+
+.agente-card.inactive {
+  opacity: 0.6;
+}
+
+.agente-icono {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.agente-details {
+  flex: 1;
+}
+
+.agente-details h3 {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.agente-details .especialidad {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.agente-details p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: var(--spacing-sm) 0;
+}
+
+@media (max-width: 768px) {
+  .agente-principal {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .agente-principal button {
+    width: 100%;
+  }
+}

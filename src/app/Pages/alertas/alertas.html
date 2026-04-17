@@ -1,0 +1,63 @@
+<div class="alertas-page">
+  <div class="page-header">
+    <h1>Alertas y Notificaciones</h1>
+    @if (sinLeer().length > 0) {
+      <button pButton label="Marcar todo como leído" class="p-button-outlined" (click)="marcarTodas()"></button>
+    }
+  </div>
+  
+  @if (emergencias().length > 0) {
+    <div class="section emergencias">
+      <h2>⚠️ Urgentes ({{ emergencias().length }})</h2>
+      @for (alerta of emergencias(); track alerta.id) {
+        <div class="alerta-card urgencia" [class.leida]="!alerta.leida" (click)="marcarLeida(alerta)">
+          <div class="alerta-icon">⚠️</div>
+          <div class="alerta-content">
+            <h3>{{ alerta.titulo }}</h3>
+            <p>{{ alerta.mensaje }}</p>
+            <span class="alerta-paciente">{{ alerta.pacienteNombre }}</span>
+          </div>
+          <div class="alerta-meta">
+            <p-tag [value]="alerta.prioridad | titlecase" [severity]="getPrioridadSeverity(alerta.prioridad)"></p-tag>
+            <span class="tiempo">{{ formatFecha(alerta.fechaCreacion) }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+  
+  @if (recordatorios().length > 0) {
+    <div class="section">
+      <h2>📅 Recordatorios ({{ recordatorios().length }})</h2>
+      @for (alerta of recordatorios(); track alerta.id) {
+        <div class="alerta-card" [class.leida]="!alerta.leida" (click)="marcarLeida(alerta)">
+          <div class="alerta-icon">📅</div>
+          <div class="alerta-content">
+            <h3>{{ alerta.titulo }}</h3>
+            <p>{{ alerta.mensaje }}</p>
+          </div>
+          <div class="alerta-meta">
+            <span class="tiempo">{{ formatFecha(alerta.fechaCreacion) }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+  
+  <div class="section">
+    <h2>Todas las alertas</h2>
+    <div class="alertas-list">
+      @for (alerta of alertas(); track alerta.id) {
+        <div class="alerta-item" [class.no-leida]="!alerta.leida">
+          <span class="tipo-icon">{{ getTipoIcon(alerta.tipo) }}</span>
+          <div class="alerta-info">
+            <span class="titulo">{{ alerta.titulo }}</span>
+            <span class="mensaje">{{ alerta.mensaje }}</span>
+          </div>
+          <p-tag [value]="alerta.prioridad | titlecase" [severity]="getPrioridadSeverity(alerta.prioridad)" class="prioridad-tag"></p-tag>
+          <span class="tiempo">{{ formatFecha(alerta.fechaCreacion) }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

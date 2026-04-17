@@ -1,0 +1,142 @@
+.alertas-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xl);
+}
+
+.page-header h1 {
+  font-size: 28px;
+}
+
+.section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section h2 {
+  font-size: 18px;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+.section.emergencias h2 {
+  color: var(--danger);
+}
+
+.alerta-card {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.alerta-card:hover {
+  border-color: var(--primary);
+}
+
+.alerta-card.urgencia {
+  border-left: 4px solid var(--danger);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.alerta-card.no-leida {
+  background: var(--bg-secondary);
+}
+
+.alerta-icon {
+  font-size: 24px;
+}
+
+.alerta-content {
+  flex: 1;
+}
+
+.alerta-content h3 {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.alerta-content p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.alerta-paciente {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.alerta-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+}
+
+.alerta-meta .tiempo {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.alertas-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.alerta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.alerta-item.no-leida {
+  background: rgba(13, 148, 136, 0.05);
+  border-color: var(--primary);
+}
+
+.tipo-icon {
+  font-size: 18px;
+}
+
+.alerta-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.alerta-info .titulo {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.alerta-info .mensaje {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.prioridad-tag {
+  font-size: 11px;
+}
+
+.alerta-item .tiempo {
+  font-size: 12px;
+  color: var(--text-secondary);
+  min-width: 80px;
+  text-align: right;
+}
