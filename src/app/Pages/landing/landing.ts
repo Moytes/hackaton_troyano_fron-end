@@ -36,7 +36,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
   featureCards = [
     { icon: 'pi pi-users', title: 'Accesible para todos', description: 'WhatsApp es la forma más fácil de acceder a atención médica en la Sierra' },
     { icon: 'pi pi-map-marker', title: 'Llega a todas partes', description: 'La tecnología lleva la salud a comunidades alejadas' },
-    { icon: 'pi pi-clock', title: 'atención inmediata', description: 'La IA responde al instante, sin importar la hora' }
+    { icon: 'pi pi-clock', title: 'Atención inmediata', description: 'La IA responde al instante, sin importar la hora' }
   ];
 
   nivelesTriage = [

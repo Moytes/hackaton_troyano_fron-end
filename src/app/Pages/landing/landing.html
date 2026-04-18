@@ -10,10 +10,6 @@
   <section class="hero" id="hero">
     <div class="hero-container">
       <div class="hero-content" data-animate="fade-up">
-        <div class="hero-badge" data-animate="fade-scale" data-delay="100">
-          <span class="badge-dot"></span>
-          <span>Telemedicina del Futuro</span>
-        </div>
         
         <div class="hero-logo" data-animate="fade-up" data-delay="200">
           <div class="logo-icon">
@@ -37,12 +33,7 @@
         
         <div class="hero-actions" data-animate="fade-up" data-delay="500">
           <a routerLink="/login" class="btn-primary">
-            <i class="pi pi-sign-in"></i>
             <span>Iniciar Sesión</span>
-          </a>
-          <a href="#funciona" class="btn-secondary">
-            <i class="pi pi-play"></i>
-            <span>Ver cómo funciona</span>
           </a>
         </div>
 
@@ -103,13 +94,6 @@
         </div>
       </div>
     </div>
-
-    <div class="scroll-indicator" data-animate="fade-up" data-delay="800">
-      <span>Scroll para explorar</span>
-      <div class="mouse">
-        <div class="wheel"></div>
-      </div>
-    </div>
   </section>
 
   <!-- Por qué TeleAsistencia -->
@@ -118,7 +102,7 @@
       <div class="section-header" data-animate="fade-up">
         <span class="section-tag">¿Por qué nosotros?</span>
         <h2 class="section-title">La salud llega a donde estés</h2>
-        <p class="section-subtitle">Llevamos atención médica de calidad a las comunidades más apartadas de la Sierra</p>
+        <p class="section-subtitle">Llevamos atención médica de calidad a las comunidades más apartadas de Querétaro</p>
       </div>
 
       <div class="feature-cards">
@@ -167,13 +151,12 @@
             </div>
             <h3>{{ paso.titulo }}</h3>
             <p>{{ paso.descripcion }}</p>
+            <!--
             @if (i < pasos.length - 1) {
               <div class="step-connector">
-                <svg viewBox="0 0 100 20">
-                  <path d="M0,10 Q50,0 100,10" fill="none" stroke="currentColor" stroke-width="2"/>
-                </svg>
               </div>
             }
+              -->
           </div>
         }
       </div>
@@ -236,7 +219,7 @@
   <section class="audience-section">
     <div class="section-container">
       <div class="section-header" data-animate="fade-up">
-        <span class="section-tag">Para quién es</span>
+        <span class="section-tag">¿Para quién es?</span>
         <h2 class="section-title">Dirigido a todos</h2>
       </div>
 
@@ -270,7 +253,6 @@
         <h2>¿Listo para transformar la atención médica?</h2>
         <p>Accede al portal de profesionales y comienza a atender a tus pacientes con la ayuda de IA</p>
         <a routerLink="/login" class="btn-cta">
-          <i class="pi pi-sign-in"></i>
           <span>Iniciar Sesión</span>
         </a>
       </div>
@@ -283,12 +265,12 @@
       <div class="footer-brand">
         <div class="footer-logo">
           <i class="pi pi-heart-fill"></i>
-          <span>TeleAsistencia Sierra</span>
+          <span>TeleAsistencia</span>
         </div>
         <p>Telemedicina con inteligencia artificial para la Sierra de Querétaro</p>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 TeleAsistencia Sierra - Hackatón Querétaro</p>
+        <p>&copy; 2025 TeleAsistencia - Hackatón Troyano</p>
         <p class="footer-tagline">Telemedicina para todos</p>
       </div>
     </div>
