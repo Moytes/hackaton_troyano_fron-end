@@ -1,3 +1,5 @@
+export type Rol = 'superadmin' | 'doctor' | 'admin';
+
 export interface Usuario {
   id: string;
   username: string;
@@ -6,7 +8,7 @@ export interface Usuario {
   apellidoMaterno?: string;
   email: string;
   especialidad: string;
-  rol: 'medico' | 'admin';
+  rol: Rol;
   fotoUrl?: string;
   fechaRegistro: Date;
   ultimoAcceso: Date;

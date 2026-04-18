@@ -1,6 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Usuario, Credenciales } from '../models/usuario.model';
+import { Usuario, Credenciales, Rol } from '../models/usuario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,19 +9,26 @@ export class AuthService {
   private usuarioActual = signal<Usuario | null>(null);
   private Remember = signal(false);
 
-  private readonly usuarioEstatico: Usuario = {
-    id: 'u1',
-    username: 'dr.garcia',
-    nombre: 'Roberto',
-    apellidoPaterno: 'García',
-    apellidoMaterno: 'Mendoza',
-    email: 'dr.garcia@salud.siglo.gob.mx',
-    especialidad: 'Medicina General',
-    rol: 'medico',
-    fotoUrl: '',
-    fechaRegistro: new Date('2024-01-01'),
-    ultimoAcceso: new Date(),
-    activo: true
+  private readonly usuariosEstaticos: Usuario[] = [
+    {
+      id: 'u1',
+      username: 'admin',
+      nombre: 'María',
+      apellidoPaterno: 'López',
+      apellidoMaterno: 'Fernández',
+      email: 'admin@salud.siglo.gob.mx',
+      especialidad: 'Administración',
+      rol: 'admin',
+      fotoUrl: '',
+      fechaRegistro: new Date('2024-01-01'),
+      ultimoAcceso: new Date(),
+      activo: true
+    }
+  ];
+
+  private readonly passwords: Record<string, string> = {
+    'admin': 'admin2024',
+    'admin@salud.siglo.gob.mx': 'admin2024'
   };
 
   readonly usuario = computed(() => this.usuarioActual());
@@ -37,19 +44,21 @@ export class AuthService {
 
     const esEmail = username.includes('@');
     
-    const credencialesValidas = 
-      (!esEmail && username === this.usuarioEstatico.username) ||
-      (esEmail && username === this.usuarioEstatico.email.toLowerCase());
+    const usuario = this.usuariosEstaticos.find(u => 
+      (!esEmail && u.username.toLowerCase() === username) ||
+      (esEmail && u.email.toLowerCase() === username)
+    );
 
-    if (credencialesValidas && password === 'tele2024') {
-      this.usuarioActual.set({ ...this.usuarioEstatico, ultimoAcceso: new Date() });
+    if (usuario && this.passwords[username] === password) {
+      this.usuarioActual.set({ ...usuario, ultimoAcceso: new Date() });
       this.Remember.set(recordarme);
 
       if (recordarme) {
         this.guardarSesion();
       }
 
-      this.router.navigate(['/dashboard']);
+      const rutaRedireccion = usuario.rol === 'doctor' ? '/citas' : '/dashboard';
+      this.router.navigate([rutaRedireccion]);
       return true;
     }
 
@@ -94,5 +103,31 @@ export class AuthService {
 
   getEspecialidad(): string {
     return this.usuarioActual()?.especialidad || '';
+  }
+
+  getRol(): Rol | null {
+    return this.usuarioActual()?.rol || null;
+  }
+
+  esDoctor(): boolean {
+    return this.usuarioActual()?.rol === 'doctor';
+  }
+
+  esAdmin(): boolean {
+    return this.usuarioActual()?.rol === 'admin';
+  }
+
+  esSuperAdmin(): boolean {
+    return this.usuarioActual()?.rol === 'superadmin';
+  }
+
+  getLabelRol(): string {
+    const rol = this.getRol();
+    const labels: Record<Rol, string> = {
+      'doctor': 'Doctor',
+      'admin': 'Administrador',
+      'superadmin': 'Super Administrador'
+    };
+    return rol ? labels[rol] : '';
   }
 }

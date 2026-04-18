@@ -161,7 +161,7 @@
   background: var(--primary);
   border-color: var(--primary);
   color: white;
-  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.3);  
 }
 
 .filtro-btn.active.grave  { background: var(--grave);   border-color: var(--grave);   box-shadow: 0 2px 6px rgba(220,38,38,0.3); }

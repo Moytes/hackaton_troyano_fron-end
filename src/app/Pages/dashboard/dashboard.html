@@ -15,7 +15,50 @@
     </div>
   </div>
   
-  <!-- Stats Cards -->
+  @if (rol() === 'doctor') {
+  <!-- Stats Cards para Doctor (Citas) -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="pi pi-calendar"></i></div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats().total }}</span>
+        <span class="stat-label">Total Citas</span>
+      </div>
+      <div class="stat-trend up">
+        <i class="pi pi-arrow-up"></i>
+        <span>{{ stats().hoy }} hoy</span>
+      </div>
+    </div>
+    
+    <div class="stat-card grave">
+      <div class="stat-icon"><i class="pi pi-clock"></i></div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats().pendientes }}</span>
+        <span class="stat-label">Pendientes</span>
+      </div>
+      <div class="stat-trend warning">
+        <span>por confirmar</span>
+      </div>
+    </div>
+    
+    <div class="stat-card moderate">
+      <div class="stat-icon"><i class="pi pi-check"></i></div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats().confirmadas }}</span>
+        <span class="stat-label">Confirmadas</span>
+      </div>
+    </div>
+    
+    <div class="stat-card success">
+      <div class="stat-icon"><i class="pi pi-check-circle"></i></div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats().completadas }}</span>
+        <span class="stat-label">Completadas</span>
+      </div>
+    </div>
+  </div>
+  } @else if (rol() === 'admin') {
+  <!-- Stats Cards para Admin (Llamadas) -->
   <div class="stats-grid">
     <div class="stat-card total">
       <div class="stat-icon"><i class="pi pi-phone"></i></div>
@@ -59,9 +102,57 @@
       </div>
     </div>
   </div>
+  } @else {
+  <!-- Stats Cards para SuperAdmin (Llamadas + Citas) -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="pi pi-phone"></i></div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats().total }}</span>
+        <span class="stat-label">Total Llamadas</span>
+      </div>
+      <div class="stat-trend up">
+        <i class="pi pi-arrow-up"></i>
+        <span>{{ stats().hoy }} hoy</span>
+      </div>
+    </div>
+    
+    <div class="stat-card grave">
+      <div class="stat-icon"><i class="pi pi-exclamation-circle"></i></div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats().graves }}</span>
+        <span class="stat-label">Emergencias</span>
+      </div>
+      <div class="stat-trend danger">
+        <span>{{ stats().emergencias }} activas</span>
+      </div>
+    </div>
+    
+    <div class="stat-card moderate">
+      <div class="stat-icon"><i class="pi pi-exclamation-triangle"></i></div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats().moderados }}</span>
+        <span class="stat-label">Moderadas</span>
+      </div>
+      <div class="stat-trend warning">
+        <span>{{ stats().enProceso }} en proceso</span>
+      </div>
+    </div>
+    
+    <div class="stat-card success">
+      <div class="stat-icon"><i class="pi pi-check-circle"></i></div>
+      <div class="stat-content">
+        <span class="stat-value">{{ stats().resueltas }}</span>
+        <span class="stat-label">Resueltas</span>
+      </div>
+    </div>
+</div>
+  }
   
+  @if (rol() !== 'doctor') {
   <!-- Segunda fila: Citas y Alertas -->
   <div class="secondary-stats">
+    @if (puedeVerCitas()) {
     <div class="card-mini">
       <div class="mini-header">
         <i class="pi pi-calendar"></i>
@@ -69,71 +160,38 @@
       </div>
       <div class="mini-value">{{ stats().citasHoy }}</div>
     </div>
-    
-    <div class="card-mini alert">
-      <div class="mini-header">
-        <i class="pi pi-bell"></i>
-        <span>Alertas Pendientes</span>
-      </div>
-      <div class="mini-value">{{ stats().alertasSinLeer }}</div>
-    </div>
+    }
   </div>
-  
-  <!-- Actividad Reciente -->
-  <div class="activity-section">
-    <div class="section-header">
-      <h2><i class="pi pi-history"></i> Actividad Reciente</h2>
-      <a routerLink="/llamadas" class="view-all">Ver todas →</a>
-    </div>
-    
-    <div class="activity-list">
-      @for (llamada of ultimasLlamadas(); track llamada.id) {
-        <div class="activity-item" [class]="'item-' + llamada.clasificacion">
-          <div class="activity-indicator" [class]="llamada.clasificacion"></div>
-          <div class="activity-content">
-            <div class="activity-time">
-              <span class="time">{{ formatHora(llamada.horaInicio) }}</span>
-              <span class="date">{{ formatFecha(llamada.horaInicio) }}</span>
-            </div>
-            <div class="activity-info">
-              <h4>{{ llamada.pacienteNombre }}</h4>
-              <p>{{ llamada.descripcion | slice:0:40 }}...</p>
-            </div>
-            <p-tag 
-              [value]="getLabelGravedad(llamada.clasificacion)" 
-              [severity]="getSeverity(llamada.clasificacion)">
-            </p-tag>
-          </div>
-        </div>
-      } @empty {
-        <div class="empty-activity">
-          <i class="pi pi-inbox"></i>
-          <p>No hay actividad reciente</p>
-        </div>
-      }
-    </div>
-  </div>
-  
+  }
+
   <!-- Accesos Rápidos -->
+  @if (rol() !== 'doctor') {
   <div class="quick-access">
     <h2><i class="pi pi-bolt"></i> Acceso Rápido</h2>
     <div class="quick-buttons">
+      @if (puedeVerLlamadas()) {
       <a routerLink="/llamadas" class="quick-btn">
         <i class="pi pi-phone"></i>
         <span>Ver Llamadas</span>
       </a>
+      }
       <a routerLink="/chat" class="quick-btn">
         <i class="pi pi-comments"></i>
         <span>Chat IA</span>
       </a>
+      @if (puedeVerCitas()) {
       <a routerLink="/citas" class="quick-btn">
         <i class="pi pi-calendar"></i>
         <span>Citas</span>
       </a>
+      }
+      @if (puedeVerAlertas()) {
       <a routerLink="/alertas" class="quick-btn">
         <i class="pi pi-bell"></i>
         <span>Alertas</span>
       </a>
+      }
     </div>
   </div>
+  }
 </div>

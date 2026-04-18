@@ -23,7 +23,7 @@
   </div>
   
   <nav class="sidebar-nav">
-    @for (item of menuItems; track item.route; let i = $index) {
+    @for (item of menuItemsFiltrado(); track item.route; let i = $index) {
       <a 
         [routerLink]="item.route"
         routerLinkActive="active"
