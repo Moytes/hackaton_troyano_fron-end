@@ -1,4 +1,4 @@
 export const environment = {
-  apiCallsUrl: import.meta.env['VITE_API_BASE_URL'] as string,
-  apiCitasUrl: import.meta.env['VITE_API_CITAS_URL'] as string,
+  apiCallsUrl: 'https://hackaton-ms-calls-production.up.railway.app',
+  apiCitasUrl: 'https://hackaton-ms-citas-production.up.railway.app/api/citas/1',
 };
