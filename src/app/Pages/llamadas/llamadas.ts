@@ -1,7 +1,8 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
@@ -9,6 +10,7 @@ import { PanelModule } from 'primeng/panel';
 import { AvatarModule } from 'primeng/avatar';
 import { LlamadasService } from '../../services/llamadas.service';
 import { LlamadasStreamService } from '../../services/llamadas-stream.service';
+import { LlamadasHttpService } from '../../services/llamadas-http.service';
 import { PacientesService } from '../../services/pacientes.service';
 import { FechaService } from '../../services/fecha.service';
 import { Llamada } from '../../models/llamada.model';
@@ -16,7 +18,7 @@ import { Llamada } from '../../models/llamada.model';
 @Component({
   selector: 'app-llamadas',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ButtonModule, TagModule, InputTextModule, PanelModule, AvatarModule],
+  imports: [CommonModule, FormsModule, ButtonModule, TagModule, InputTextModule, PanelModule, AvatarModule],
   templateUrl: './llamadas.html',
   styleUrl: './llamadas.css'
 })
@@ -24,6 +26,8 @@ export class LlamadasComponent implements OnInit, OnDestroy {
   private llamadasService = inject(LlamadasService);
   private streamService = inject(LlamadasStreamService);
   private pacientesService = inject(PacientesService);
+  private httpService = inject(LlamadasHttpService);
+  private router = inject(Router);
   protected fechaService = inject(FechaService);
 
   streamConnected = this.streamService.isStreamConnected;
@@ -61,6 +65,8 @@ export class LlamadasComponent implements OnInit, OnDestroy {
   searchQuery = signal('');
   filtroActivo = signal<'todas' | 'grave' | 'moderado' | 'leve' | 'normal'>('todas');
   llamadaSeleccionada = signal<Llamada | null>(null);
+  usuarioActual = signal<any>(null);
+  cargandoUsuario = signal(false);
   
   readonly todas = computed(() => this.llamadasService.llamadasList());
   readonly graves = this.llamadasService.graves;
@@ -113,6 +119,40 @@ export class LlamadasComponent implements OnInit, OnDestroy {
   
   seleccionarLlamada(llamada: Llamada): void {
     this.llamadaSeleccionada.set(llamada);
+    this.usuarioActual.set(null);
+    this.cargandoUsuario.set(true);
+
+    this.httpService.getUserById(llamada.pacienteId).subscribe({
+      next: (res: any) => {
+        console.log('👤 [LLAMADAS COMPONENT] Usuario cargado:', res.user);
+        const realName = res.user.name;
+        
+        // 1. Update the patient data signal
+        this.usuarioActual.set(res.user);
+        
+        // 2. Update the name in the call service list so the sidebar is updated
+        this.llamadasService.actualizarLlamada(llamada.id, { pacienteNombre: realName });
+        
+        // 3. Update the local selection to reflect the change immediately in the middle panel
+        this.llamadaSeleccionada.update(curr => curr ? { ...curr, pacienteNombre: realName } : null);
+        
+        this.cargandoUsuario.set(false);
+      },
+      error: (err: any) => {
+        console.error('❌ [LLAMADAS COMPONENT] Error cargando usuario:', err);
+        this.cargandoUsuario.set(false);
+      }
+    });
+  }
+
+  irADetalleLlamada(llamada: Llamada): void {
+    console.log('🔗 [LLAMADAS COMPONENT] Navegando a detalle con datos del usuario');
+    this.router.navigate(['/llamada-detalle', llamada.id], {
+      state: {
+        usuario: this.usuarioActual(),
+        llamada: llamada
+      }
+    });
   }
   
   getSeverity(gravedad: string): 'danger' | 'warn' | 'success' | 'info' {
@@ -201,6 +241,17 @@ export class LlamadasComponent implements OnInit, OnDestroy {
 
   getTiempoAgora(horaInicio: Date): Date {
     return horaInicio;
+  }
+
+  calcularEdad(fechaNacimiento: string): number {
+    const fecha = this.fechaService.parseDate(fechaNacimiento);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - fecha.getFullYear();
+    const mes = hoy.getMonth() - fecha.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) {
+      edad--;
+    }
+    return edad;
   }
 
   async crearEmergencia(): Promise<void> {

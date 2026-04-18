@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -8,6 +8,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { LlamadasService } from '../../services/llamadas.service';
 import { LlamadasStreamService } from '../../services/llamadas-stream.service';
+import { LlamadasHttpService } from '../../services/llamadas-http.service';
 import { PacientesService } from '../../services/pacientes.service';
 import { FechaService } from '../../services/fecha.service';
 import { Transcription } from '../../models/llamada.model';
@@ -23,11 +24,15 @@ export class LlamadaDetalleComponent implements OnInit, OnDestroy, AfterViewChec
   @ViewChild('conversationScroll') conversationScroll!: ElementRef;
 
   private route = inject(ActivatedRoute);
+  private location = inject(Location);
   private llamadasService = inject(LlamadasService);
+  private httpService = inject(LlamadasHttpService);
   private pacientesService = inject(PacientesService);
   private streamService = inject(LlamadasStreamService);
   protected fechaService = inject(FechaService);
 
+  usuarioActual = signal<any>(null);
+  usuarioDisponible = computed(() => !!this.usuarioActual());
   private shouldScroll = false;
   
   readonly llamada = computed(() => {
@@ -50,9 +55,39 @@ export class LlamadaDetalleComponent implements OnInit, OnDestroy, AfterViewChec
   ngOnInit(): void {
     console.log('🎯 [DETALLE] Inicializando componente de detalle...');
     const llamadaId = this.route.snapshot.paramMap.get('id');
+
+    // Intentar obtener usuario del estado de navegación primero (sin petición HTTP)
+    const navigationState = this.location.path();
+    const usuarioDelEstado = (this.location as any).historyState?.usuario;
+
+    if (usuarioDelEstado) {
+      console.log('✅ [DETALLE] Usuario obtenido del estado de navegación (sin HTTP):', usuarioDelEstado.name);
+      this.usuarioActual.set(usuarioDelEstado);
+    } else if (llamadaId) {
+      // Fallback: si no hay usuario en estado, cargar desde API
+      const llamada = this.llamadasService.getLlamada(llamadaId);
+      if (llamada) {
+        console.log('📡 [DETALLE] Usuario NO en estado, cargando desde API...');
+        this.cargarUsuarioDesdeAPI(llamada.pacienteId);
+      }
+    }
+
     if (llamadaId) {
       this.iniciarStreamConversacion(llamadaId);
     }
+  }
+
+  private cargarUsuarioDesdeAPI(pacienteId: string): void {
+    console.log('📡 [DETALLE] Cargando datos del usuario desde API:', pacienteId);
+    this.httpService.getUserById(pacienteId).subscribe({
+      next: (res: any) => {
+        console.log('✅ [DETALLE] Usuario cargado desde API:', res.user.name);
+        this.usuarioActual.set(res.user);
+      },
+      error: (err: any) => {
+        console.error('❌ [DETALLE] Error cargando usuario desde API:', err);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -133,5 +168,18 @@ export class LlamadaDetalleComponent implements OnInit, OnDestroy, AfterViewChec
       'normal': 'NORMAL'
     };
     return map[gravedad] || gravedad.toUpperCase();
+  }
+
+  getInitials(name: string): string {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 3);
+  }
+
+  getNombrePaciente(): string {
+    return this.usuarioActual()?.name || this.llamada()?.pacienteNombre || 'Paciente';
   }
 }

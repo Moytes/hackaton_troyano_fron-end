@@ -12,17 +12,7 @@
           <p>Gestión de llamadas entrantes</p>
         </div>
       </div>
-      <div class="header-actions">
-        <button
-          pButton
-          type="button"
-          icon="pi pi-exclamation-circle"
-          label="Crear Emergencia"
-          (click)="crearEmergencia()"
-          class="p-button-danger p-button-sm"
-          pTooltip="Crear una nueva llamada de emergencia (botón rojo)">
-        </button>
-      </div>
+
       <div class="header-count">{{ todas().length }}</div>
     </div>
     
@@ -83,7 +73,7 @@
           <div class="card-indicator" [class]="llamada.clasificacion"></div>
           <div class="card-content">
             <div class="card-header-row">
-              <span class="paciente-nombre">{{ llamada.pacienteNombre }}</span>
+              <span class="paciente-nombre">{{ llamada.pacienteNombre || 'Paciente' }}</span>
               <div class="card-tiempo">
                 <span class="card-dia">{{ fechaService.getDiaLabel(llamada.horaInicio) }}</span>
                 <span class="card-hora">{{ fechaService.formatHora(llamada.horaInicio) }}</span>
@@ -132,10 +122,6 @@
               </span>
             </div>
           </div>
-        </div>
-        <div class="header-actions">
-          <button pButton icon="pi pi-phone" pTooltip="Llamar" class="p-button-rounded p-button-text"></button>
-          <button pButton icon="pi pi-heart" pTooltip="Monitorear" class="p-button-rounded p-button-text"></button>
         </div>
       </div>
 
@@ -251,13 +237,7 @@
         </div>
       }
 
-      <!-- Acciones -->
-      <div class="acciones-grid">
-        <button pButton label="Derivar" icon="pi pi-user-plus" class="p-button-outlined action-btn"></button>
-        <button pButton label="Agendar" icon="pi pi-calendar-plus" class="p-button-outlined action-btn"></button>
-        <button pButton label="Chat IA" icon="pi pi-comments" routerLink="/chat" class="p-button-help action-btn"></button>
-        <button pButton label="Completar" icon="pi pi-check" class="p-button-success action-btn"></button>
-      </div>
+
     } @else {
       <div class="no-seleccion">
         <i class="pi pi-phone"></i>
@@ -269,18 +249,17 @@
   
   <!-- PANEL 3: Datos del Paciente -->
   <div class="panel panel-paciente">
-    @if (pacienteActual()) {
+    @if (usuarioActual()) {
       <!-- Header paciente -->
       <div class="paciente-header">
-        <div class="paciente-avatar">
-          <i class="pi pi-user"></i>
+        <div class="paciente-avatar-container">
+          <div class="paciente-avatar">
+            <i class="pi pi-user"></i>
+          </div>
         </div>
         <div class="paciente-info">
-          <h2>{{ pacienteActual()!.nombre }} {{ pacienteActual()!.apellidoPaterno }} {{ pacienteActual()!.apellidoMaterno }}</h2>
-          <div class="paciente-quick-actions">
-            <button pButton label="Llamar" icon="pi pi-phone" class="p-button-success p-button-sm btn-action"></button>
-            <button pButton label="Mensaje" icon="pi pi-comment" class="p-button-outlined p-button-sm btn-action"></button>
-          </div>
+          <h2>{{ usuarioActual()!.name }}</h2>
+          <p class="paciente-subtitle">Información del paciente</p>
         </div>
       </div>
 
@@ -290,84 +269,86 @@
           <div class="contacto-icon"><i class="pi pi-phone"></i></div>
           <div class="contacto-data">
             <span class="contacto-label">Teléfono</span>
-            <span class="contacto-value">{{ pacienteActual()!.telefono }}</span>
+            <span class="contacto-value">{{ usuarioActual()!.phoneNumber }}</span>
           </div>
-          <button pButton icon="pi pi-copy" class="p-button-text p-button-sm p-button-rounded"></button>
+          <div class="contacto-action">
+            <button pButton icon="pi pi-copy" class="p-button-text p-button-sm p-button-rounded" pTooltip="Copiar teléfono"></button>
+          </div>
         </div>
         <div class="contacto-item emergency">
           <div class="contacto-icon"><i class="pi pi-exclamation-triangle"></i></div>
           <div class="contacto-data">
             <span class="contacto-label">Emergencia</span>
-            <span class="contacto-value">{{ pacienteActual()!.telefonoEmergencia }}</span>
+            <span class="contacto-value">{{ usuarioActual()!.emergencyContactPhone }}</span>
           </div>
-          <button pButton icon="pi pi-copy" class="p-button-text p-button-sm p-button-rounded"></button>
+          <div class="contacto-action">
+            <button pButton icon="pi pi-copy" class="p-button-text p-button-sm p-button-rounded" pTooltip="Copiar contacto"></button>
+          </div>
         </div>
         <div class="contacto-item">
           <div class="contacto-icon"><i class="pi pi-map-marker"></i></div>
           <div class="contacto-data">
             <span class="contacto-label">Comunidad</span>
-            <span class="contacto-value">{{ pacienteActual()!.comunidad }}</span>
+            <span class="contacto-value">{{ usuarioActual()!.municipality }}</span>
           </div>
+          <div class="contacto-action spacer"></div>
         </div>
       </div>
 
       <!-- Info personal grid -->
       <div class="paciente-info-grid">
-        <div class="info-box">
-          <div class="info-box-icon age"><i class="pi pi-calendar"></i></div>
-          <div class="info-box-data">
-            <span class="info-box-value">{{ pacienteActual()!.edad }} años</span>
+        <div class="info-box box-age">
+          <div class="info-box-header">
+            <div class="info-box-icon"><i class="pi pi-calendar"></i></div>
             <span class="info-box-label">Edad</span>
           </div>
-        </div>
-        <div class="info-box">
-          <div class="info-box-icon blood"><i class="pi pi-heart-fill"></i></div>
-          <div class="info-box-data">
-            <span class="info-box-value blood-type">{{ pacienteActual()!.tipoSangre }}</span>
-            <span class="info-box-label">Tipo de sangre</span>
+          <div class="info-box-content">
+            <span class="info-box-value">{{ calcularEdad(usuarioActual()!.birthDate) }} años</span>
           </div>
         </div>
-        <div class="info-box">
-          <div class="info-box-icon gen"><i class="pi pi-user"></i></div>
-          <div class="info-box-data">
-            <span class="info-box-value">{{ pacienteActual()!.genero === 'M' ? 'Masculino' : 'Femenino' }}</span>
+
+        <div class="info-box box-blood">
+          <div class="info-box-header">
+            <div class="info-box-icon"><i class="pi pi-heart-fill"></i></div>
+            <span class="info-box-label">Sangre</span>
+          </div>
+          <div class="info-box-content">
+            <span class="info-box-value blood-badge">O+</span>
+          </div>
+        </div>
+
+        <div class="info-box box-gender">
+          <div class="info-box-header">
+            <div class="info-box-icon"><i class="pi pi-user"></i></div>
             <span class="info-box-label">Género</span>
           </div>
+          <div class="info-box-content">
+            <span class="info-box-value">{{ usuarioActual()!.gender === 'M' ? 'Masculino' : usuarioActual()!.gender === 'F' ? 'Femenino' : 'No especificado' }}</span>
+          </div>
         </div>
-        <div class="info-box">
-          <div class="info-box-icon reg"><i class="pi pi-calendar-plus"></i></div>
-          <div class="info-box-data">
-            <span class="info-box-value">{{ formatFecha(pacienteActual()!.fechaRegistro) }}</span>
-            <span class="info-box-label">Registrado</span>
+
+        <div class="info-box box-reg">
+          <div class="info-box-header">
+            <div class="info-box-icon"><i class="pi pi-calendar-plus"></i></div>
+            <span class="info-box-label">Registro</span>
+          </div>
+          <div class="info-box-content">
+            <span class="info-box-value">{{ formatFecha(fechaService.parseDate(usuarioActual()!.createdAt)) }}</span>
           </div>
         </div>
       </div>
 
       <!-- Alertas médicas -->
       <div class="medical-alerts">
-        @if (pacienteActual()!.enfermedadesCronicas.length > 0) {
+        @if (usuarioActual()!.chronicConditions && usuarioActual()!.chronicConditions.length > 0) {
           <div class="alert-section">
             <div class="alert-title">
               <i class="pi pi-exclamation-circle"></i>
               <span>Enfermedades crónicas</span>
             </div>
             <div class="alert-chips">
-              @for (enfermedad of pacienteActual()!.enfermedadesCronicas; track enfermedad) {
+              @for (enfermedad of usuarioActual()!.chronicConditions; track enfermedad) {
                 <span class="alert-chip disease">{{ enfermedad }}</span>
-              }
-            </div>
-          </div>
-        }
-        
-        @if (pacienteActual()!.alergias.length > 0) {
-          <div class="alert-section">
-            <div class="alert-title">
-              <i class="pi pi-exclamation-triangle"></i>
-              <span>Alergias</span>
-            </div>
-            <div class="alert-chips">
-              @for (alergia of pacienteActual()!.alergias; track alergia) {
-                <span class="alert-chip allergy">{{ alergia }}</span>
               }
             </div>
           </div>
@@ -375,15 +356,15 @@
       </div>
 
       <!-- Medicamentos -->
-      @if (pacienteActual()!.medicamentos.length > 0) {
+      @if (usuarioActual()!.medications && usuarioActual()!.medications.length > 0) {
         <div class="medicamentos-card">
           <div class="medicamentos-header">
             <i class="pi pi-box"></i>
             <span>Medicamentos actuales</span>
-            <span class="med-count">{{ pacienteActual()!.medicamentos.length }}</span>
+            <span class="med-count">{{ usuarioActual()!.medications.length }}</span>
           </div>
           <div class="medicamentos-list">
-            @for (med of pacienteActual()!.medicamentos; track med) {
+            @for (med of usuarioActual()!.medications; track med) {
               <div class="med-item">
                 <div class="med-icon"><i class="pi pi-check-circle"></i></div>
                 <span class="med-name">{{ med }}</span>
@@ -423,6 +404,12 @@
           </div>
         </div>
       }
+    } @else if (cargandoUsuario()) {
+      <div class="no-paciente">
+        <i class="pi pi-hourglass"></i>
+        <h3>Cargando datos...</h3>
+        <p>Obteniendo información del paciente</p>
+      </div>
     } @else {
       <div class="no-paciente">
         <i class="pi pi-user"></i>

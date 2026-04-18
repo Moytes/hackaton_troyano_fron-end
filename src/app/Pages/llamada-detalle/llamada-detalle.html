@@ -10,17 +10,27 @@
       <div class="clasificacion">
         <p-tag [value]="getLabel(llamada()!.clasificacion)" [severity]="getSeverity(llamada()!.clasificacion)" class="clasificacion-tag"></p-tag>
       </div>
-      <h1>{{ llamada()!.pacienteNombre }}</h1>
+      <h1>{{ getNombrePaciente() }}</h1>
       <span class="tipo">{{ llamada()!.tipo | titlecase }} - {{ fechaService.getDiaLabel(llamada()!.horaInicio) }} {{ fechaService.formatHora(llamada()!.horaInicio) }}</span>
     </div>
     
-    <div class="paciente-card">
-      <p-avatar [label]="llamada()!.pacienteNombre.charAt(0)" size="xlarge" shape="circle" styleClass="avatar-paciente"></p-avatar>
-      <div class="info">
-        <h2>{{ llamada()!.pacienteNombre }}</h2>
-        <p>{{ paciente()?.edad }} años • {{ paciente()?.comunidad }}</p>
+    @if (usuarioDisponible()) {
+      <div class="paciente-card">
+        <p-avatar [label]="getInitials(getNombrePaciente())" size="xlarge" shape="circle" styleClass="avatar-paciente"></p-avatar>
+        <div class="info">
+          <h2>{{ getNombrePaciente() }}</h2>
+          <p>{{ usuarioActual()?.municipality || paciente()?.comunidad }}</p>
+        </div>
       </div>
-    </div>
+    } @else {
+      <div class="paciente-card loading">
+        <p-avatar label="..." size="xlarge" shape="circle" styleClass="avatar-paciente"></p-avatar>
+        <div class="info">
+          <h2>Cargando datos...</h2>
+          <p>Obteniendo información del paciente</p>
+        </div>
+      </div>
+    }
     
     <p-panel header="Síntomas" [toggleable]="true" class="panel-sintomas">
       <div class="sintomas-list">

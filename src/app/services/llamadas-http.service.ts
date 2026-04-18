@@ -2,8 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Llamada } from '../models/llamada.model';
+import { Paciente } from '../models/paciente.model';
 import { FechaService } from './fecha.service';
-import { getCallsEndpoint, getCallsByUserEndpoint, getCreateEmergencyEndpoint } from '../config/api.config';
+import { getCallsEndpoint, getCallsByUserEndpoint, getCreateEmergencyEndpoint, getUserEndpoint } from '../config/api.config';
 
 interface CallFromBackend {
   id: string;
@@ -18,6 +19,31 @@ interface CallFromBackend {
   summaryMarkdown: string;
   durationSeconds: number;
   createdAt: string;
+}
+
+interface UserFromBackend {
+  id: string;
+  familyGroupId?: string;
+  phoneNumber: string;
+  name: string;
+  municipality: string;
+  address: string;
+  birthDate: string;
+  gender?: string;
+  chronicConditions: any[];
+  medications: any[];
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  mainSummary?: string;
+  isOnboarded: boolean;
+  callCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface UserWithLastCallResponse {
+  user: UserFromBackend;
+  lastCall: CallFromBackend;
 }
 
 @Injectable({
@@ -80,6 +106,15 @@ export class LlamadasHttpService {
     );
   }
 
+  getUserById(userId: string): Observable<UserWithLastCallResponse> {
+    const url = getUserEndpoint(userId);
+    return this.http.get<UserWithLastCallResponse>(url).pipe(
+      tap(res => {
+        console.log('📡 GET /api/users/:id →', res);
+      })
+    );
+  }
+
   mapBackendToLlamada(call: CallFromBackend, index: number): Llamada {
     // Mapeos de clasificación (severidad)
     const clasificacionMap: Record<string, 'grave' | 'moderado' | 'leve' | 'normal'> = {
@@ -131,7 +166,6 @@ export class LlamadasHttpService {
     };
 
     const createdDate = this.fechaService.parseDate(call.createdAt);
-    const userIdShort = call.userId ? call.userId.substring(0, 8) : `Call-${call.id.substring(0, 8)}`;
 
     const clasificacion = clasificacionMap[call.classification] ||
                           (call.callType === 'EMERGENCY' || call.callType === 'emergency' ? 'grave' : 'normal');
@@ -142,7 +176,7 @@ export class LlamadasHttpService {
     return {
       id: call.id,
       pacienteId: call.userId || '',
-      pacienteNombre: `Paciente ${userIdShort}`,
+      pacienteNombre: call.patientName || 'Cargando...',
       clasificacion: clasificacion,
       nivelTriage: this.calcularNivelTriage(clasificacion),
       estado: estadoMap[call.status] || 'entrante',
@@ -169,5 +203,41 @@ export class LlamadasHttpService {
       'normal': 5
     };
     return nivelMap[clasificacion] || 3;
+  }
+
+  mapUserToPaciente(user: UserFromBackend): Paciente {
+    const birthDate = this.fechaService.parseDate(user.birthDate);
+    const registroDate = this.fechaService.parseDate(user.createdAt);
+
+    const calcularEdad = (fecha: Date): number => {
+      const hoy = new Date();
+      let edad = hoy.getFullYear() - fecha.getFullYear();
+      const mes = hoy.getMonth() - fecha.getMonth();
+      if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) {
+        edad--;
+      }
+      return edad;
+    };
+
+    return {
+      id: user.id,
+      nombre: user.name.split(' ')[0] || user.name,
+      apellidoPaterno: user.name.split(' ')[1] || '',
+      apellidoMaterno: user.name.split(' ')[2] || '',
+      fechaNacimiento: birthDate,
+      edad: calcularEdad(birthDate),
+      genero: (user.gender === 'M' ? 'M' : user.gender === 'F' ? 'F' : 'Otro') as 'M' | 'F' | 'Otro',
+      telefono: user.phoneNumber,
+      telefonoEmergencia: user.emergencyContactPhone,
+      direccion: user.address,
+      comunidad: user.municipality,
+      tipoSangre: 'O+',
+      enfermedadesCronicas: Array.isArray(user.chronicConditions) ? user.chronicConditions.filter(c => typeof c === 'string') : [],
+      alergias: [],
+      medicamentos: Array.isArray(user.medications) ? user.medications.filter(m => typeof m === 'string') : [],
+      cirugias: [],
+      fechaRegistro: registroDate,
+      ultimoContacto: registroDate
+    };
   }
 }

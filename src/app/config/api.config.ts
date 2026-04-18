@@ -16,7 +16,8 @@ export const API_CONFIG = {
     CALLS_BY_USER: (userId: string) => `/api/calls/user/${userId}`,
     CALLS_BY_CLASSIFICATION: (classification: string) => `/api/calls/classification/${classification}`,
     CREATE_EMERGENCY: '/api/calls/emergency',
-    CALLS_STREAM: '/api/calls/stream'
+    CALLS_STREAM: '/api/calls/stream',
+    USER_BY_ID: (id: string) => `/api/users/${id}`
   }
 };
 
@@ -38,4 +39,8 @@ export function getCreateEmergencyEndpoint(): string {
 
 export function getCallsStreamEndpoint(): string {
   return `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CALLS_STREAM}`;
+}
+
+export function getUserEndpoint(id: string): string {
+  return `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_BY_ID(id)}`;
 }
