@@ -13,7 +13,7 @@ import { AuthService } from './services/auth.service';
   styleUrl: './app.css'
 })
 export class App {
-  title = 'TeleAsistencia Sierra';
+  title = 'VozRural';
   sidebarCollapsed = signal(false);
   mobileMenuOpen = signal(false);
   esLanding = signal(true);
