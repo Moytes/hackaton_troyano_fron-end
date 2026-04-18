@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { CardModule } from 'primeng/card';
 import { CitasApiService, Cita } from '../../services/citas-api.service';
 import { AuthService } from '../../services/auth.service';
+import { CitasService } from '../../services/citas.service';
 
 @Component({
   selector: 'app-citas',
@@ -31,6 +32,7 @@ import { AuthService } from '../../services/auth.service';
 export class CitasComponent implements OnInit {
   private citasApiService = inject(CitasApiService);
   private authService = inject(AuthService);
+  private mockCitasService = inject(CitasService); // Fallback mock service
 
   // Estados
   todasLasCitas = signal<Cita[]>([]);
@@ -39,6 +41,7 @@ export class CitasComponent implements OnInit {
 
   loading = signal(false);
   error = signal('');
+  usandoMocks = signal(false); // Flag para indicar que estamos en modo demo
   selectedDoctorId = signal<number>(0);
   citaIdBusqueda = signal<number>(0);
   activeTab = signal<'doctor' | 'todas' | 'detalle'>('doctor');
@@ -96,17 +99,39 @@ export class CitasComponent implements OnInit {
     }
   }
 
+  private mapearMockACitaApi(mockCita: any): Cita {
+    const fecha = new Date(mockCita.fecha);
+    const fechaFin = new Date(fecha.getTime() + (mockCita.duracion || 30) * 60000);
+    
+    return {
+      id: parseInt(mockCita.id.replace(/\D/g, '') || '0', 10),
+      createdAt: fecha.toISOString(),
+      doctorId: parseInt(mockCita.doctorId.replace(/\D/g, '') || '0', 10),
+      pacienteId: mockCita.pacienteId,
+      pacienteNombre: mockCita.pacienteNombre,
+      pacienteTelefono: '555-0123', // Mock data doesn't have phone
+      fechaHoraInicio: fecha.toISOString(),
+      fechaHoraFin: fechaFin.toISOString(),
+      motivo: mockCita.notas || 'Consulta general (Demo)',
+      estado: (mockCita.estado === 'agendada' ? 'pendiente' : mockCita.estado) as any
+    };
+  }
+
   cargarTodasLasCitas(): void {
     this.loading.set(true);
     this.error.set('');
+    this.usandoMocks.set(false);
 
     this.citasApiService.obtenerTodasLasCitas().subscribe({
       next: (citas) => {
         this.todasLasCitas.set(citas);
         this.loading.set(false);
       },
-      error: (err) => {
-        this.error.set('Error al cargar todas las citas');
+      error: (err: any) => {
+        console.warn('⚠️ [Citas] Fallo en API, usando datos de respaldo (Mock):', err);
+        const mocks = this.mockCitasService.citasList().map((c: any) => this.mapearMockACitaApi(c));
+        this.todasLasCitas.set(mocks);
+        this.usandoMocks.set(true);
         this.loading.set(false);
       }
     });
@@ -118,18 +143,28 @@ export class CitasComponent implements OnInit {
 
     this.loading.set(true);
     this.error.set('');
+    this.usandoMocks.set(false);
 
     this.citasApiService.obtenerCitasPorDoctor(doctorId).subscribe({
       next: (citas) => {
         this.citasDoctor.set(citas);
         this.loading.set(false);
       },
-      error: (err) => {
-        this.error.set('Error al cargar citas del doctor');
+      error: (err: any) => {
+        console.warn(`⚠️ [Citas] Fallo en API para doctor ${doctorId}, usando datos de respaldo (Mock):`, err);
+        
+        // Filtramos mocks por doctorId (ej: 'd2' matches doctorId 2)
+        const mocks = this.mockCitasService.citasList()
+          .filter((c: any) => parseInt(c.doctorId.replace(/\D/g, ''), 10) === doctorId)
+          .map((c: any) => this.mapearMockACitaApi(c));
+          
+        this.citasDoctor.set(mocks);
+        this.usandoMocks.set(true);
         this.loading.set(false);
       }
     });
   }
+
 
   buscarCitaPorId(): void {
     const citaId = this.citaIdBusqueda();

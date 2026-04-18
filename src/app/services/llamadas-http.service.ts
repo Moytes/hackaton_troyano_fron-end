@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, timeout, catchError, throwError } from 'rxjs';
 import { Llamada } from '../models/llamada.model';
 import { Paciente } from '../models/paciente.model';
 import { FechaService } from './fecha.service';
@@ -52,10 +52,12 @@ interface UserWithLastCallResponse {
 export class LlamadasHttpService {
   private http = inject(HttpClient);
   private fechaService = inject(FechaService);
+  private readonly DEFAULT_TIMEOUT = 10000;
 
   getAllCalls(): Observable<CallFromBackend[]> {
     const url = getCallsEndpoint();
     return this.http.get<CallFromBackend[]>(url).pipe(
+      timeout(this.DEFAULT_TIMEOUT),
       tap(calls => {
         console.log('📡 GET /api/calls →', calls);
         if (calls.length > 0) {
@@ -75,6 +77,10 @@ export class LlamadasHttpService {
             callType: first.callType
           });
         }
+      }),
+      catchError(err => {
+        console.error('❌ [API] Error obteniendo todas las llamadas:', err);
+        return throwError(() => err);
       })
     );
   }
@@ -82,8 +88,13 @@ export class LlamadasHttpService {
   getCallsByUserId(userId: string): Observable<CallFromBackend[]> {
     const url = getCallsByUserEndpoint(userId);
     return this.http.get<CallFromBackend[]>(url).pipe(
+      timeout(this.DEFAULT_TIMEOUT),
       tap(calls => {
         console.log('📡 GET /api/calls/user/:userId →', calls);
+      }),
+      catchError(err => {
+        console.error(`❌ [API] Error obteniendo llamadas para usuario ${userId}:`, err);
+        return throwError(() => err);
       })
     );
   }
@@ -91,8 +102,13 @@ export class LlamadasHttpService {
   getCallsByClassification(classification: string): Observable<CallFromBackend[]> {
     const url = `${getCallsEndpoint()}/classification/${classification}`;
     return this.http.get<CallFromBackend[]>(url).pipe(
+      timeout(this.DEFAULT_TIMEOUT),
       tap(calls => {
         console.log('📡 GET /api/calls/classification/:classification →', calls);
+      }),
+      catchError(err => {
+        console.error(`❌ [API] Error obteniendo llamadas por clasificación ${classification}:`, err);
+        return throwError(() => err);
       })
     );
   }
@@ -100,8 +116,13 @@ export class LlamadasHttpService {
   createEmergencyCall(): Observable<CallFromBackend> {
     const url = getCreateEmergencyEndpoint();
     return this.http.post<CallFromBackend>(url, {}).pipe(
+      timeout(this.DEFAULT_TIMEOUT),
       tap(call => {
         console.log('📡 POST /api/calls/emergency →', call);
+      }),
+      catchError(err => {
+        console.error('❌ [API] Error creando llamada de emergencia:', err);
+        return throwError(() => err);
       })
     );
   }
@@ -109,8 +130,13 @@ export class LlamadasHttpService {
   getUserById(userId: string): Observable<UserWithLastCallResponse> {
     const url = getUserEndpoint(userId);
     return this.http.get<UserWithLastCallResponse>(url).pipe(
+      timeout(this.DEFAULT_TIMEOUT),
       tap(res => {
         console.log('📡 GET /api/users/:id →', res);
+      }),
+      catchError(err => {
+        console.error(`❌ [API] Error obteniendo usuario ${userId}:`, err);
+        return throwError(() => err);
       })
     );
   }
