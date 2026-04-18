@@ -163,7 +163,7 @@ export class LlamadasHttpService {
       'sin_clasificar': 'grave'
     };
 
-    // Mapeos de estado (flujo)
+
     const estadoMap: Record<string, 'entrante' | 'en_proceso' | 'escalada' | 'resuelta' | 'cancelada'> = {
       'PENDING': 'entrante',
       'IN_PROGRESS': 'en_proceso',
