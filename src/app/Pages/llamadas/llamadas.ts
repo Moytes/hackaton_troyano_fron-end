@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -18,9 +18,13 @@ import { Llamada } from '../../models/llamada.model';
   templateUrl: './llamadas.html',
   styleUrl: './llamadas.css'
 })
-export class LlamadasComponent {
+export class LlamadasComponent implements OnInit {
   private llamadasService = inject(LlamadasService);
   private pacientesService = inject(PacientesService);
+
+  ngOnInit() {
+    this.llamadasService.cargarLlamadasDelBackend();
+  }
   
   searchQuery = signal('');
   filtroActivo = signal<'todas' | 'grave' | 'moderado' | 'leve' | 'normal'>('todas');
@@ -162,5 +166,19 @@ export class LlamadasComponent {
 
   getTiempoAgora(horaInicio: Date): Date {
     return horaInicio;
+  }
+
+  async crearEmergencia(): Promise<void> {
+    console.log('🚨 [COMPONENTE] Iniciando creación de emergencia...');
+    const nuevaEmergencia = await this.llamadasService.crearLlamadaEmergencia();
+    if (nuevaEmergencia) {
+      console.log('✅ [COMPONENTE] Emergencia creada! ID:', nuevaEmergencia.id);
+      this.seleccionarLlamada(nuevaEmergencia);
+      // Mostrar notificación (opcional)
+      alert(`✅ Emergencia creada:\nID: ${nuevaEmergencia.id}\nClasificación: ${nuevaEmergencia.clasificacion}`);
+    } else {
+      console.error('❌ [COMPONENTE] Error al crear emergencia');
+      alert('❌ Error al crear la emergencia. Revisa la consola.');
+    }
   }
 }

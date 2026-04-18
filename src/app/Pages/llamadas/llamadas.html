@@ -12,6 +12,17 @@
           <p>Gestión de llamadas entrantes</p>
         </div>
       </div>
+      <div class="header-actions">
+        <button
+          pButton
+          type="button"
+          icon="pi pi-exclamation-circle"
+          label="Crear Emergencia"
+          (click)="crearEmergencia()"
+          class="p-button-danger p-button-sm"
+          pTooltip="Crear una nueva llamada de emergencia (botón rojo)">
+        </button>
+      </div>
       <div class="header-count">{{ todas().length }}</div>
     </div>
     

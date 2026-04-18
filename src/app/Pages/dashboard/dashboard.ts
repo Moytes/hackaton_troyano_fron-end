@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -33,11 +33,22 @@ interface DashboardStats {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private llamadasService = inject(LlamadasService);
   private citasService = inject(CitasService);
   private alertasService = inject(AlertasService);
   private authService = inject(AuthService);
+
+  ngOnInit() {
+    this.cargarDatos();
+  }
+
+  private async cargarDatos() {
+    const rol = this.authService.getRol();
+    if (rol === 'admin' || rol === 'superadmin') {
+      await this.llamadasService.cargarLlamadasDelBackend();
+    }
+  }
   
   readonly rol = computed(() => this.authService.getRol());
   
