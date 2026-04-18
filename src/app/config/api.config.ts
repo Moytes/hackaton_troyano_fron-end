@@ -2,11 +2,18 @@ declare const __VITE_ENV__: Record<string, string>;
 
 const getBaseUrl = (): string => {
   try {
-    const env = (import.meta as any).env;
-    return env?.VITE_API_BASE_URL || 'https://hackaton-ms-calls-production.up.railway.app';
-  } catch {
-    return 'https://hackaton-ms-calls-production.up.railway.app';
+    const env = (import.meta as any)?.env;
+    const apiUrl = env?.VITE_API_BASE_URL;
+
+    if (apiUrl && typeof apiUrl === 'string' && apiUrl.length > 0) {
+      return apiUrl;
+    }
+  } catch (e) {
+    console.warn('⚠️ Error reading import.meta.env:', e);
   }
+
+  // Fallback por defecto
+  return 'https://hackaton-ms-calls-production.up.railway.app';
 };
 
 export const API_CONFIG = {
