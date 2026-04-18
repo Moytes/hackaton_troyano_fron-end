@@ -19,8 +19,7 @@
           [class.is-invalid]="
             loginForm.get('username')?.invalid &&
             loginForm.get('username')?.touched
-          "
-        />
+          " />
         <small class="error" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
           El usuario es requerido
         </small>
@@ -28,14 +27,19 @@
 
       <div class="form-group">
         <label for="password">Contrasena</label>
-        <p-password
-          id="password"
-          formControlName="password"
-          placeholder="Ingresa tu contrasena"
-          [toggleMask]="true"
-          [feedback]="false"
-          [class]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched ? 'is-invalid' : ''"
-        ></p-password>
+        <div class="input-wrapper">
+          <i class="pi pi-lock"></i>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="Ingresa tu contrasena"
+            class="password-input"
+            [class.is-invalid]="
+              loginForm.get('password')?.invalid &&
+              loginForm.get('password')?.touched
+            " />
+        </div>
         <small class="error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
           La contrasena es requerida
         </small>

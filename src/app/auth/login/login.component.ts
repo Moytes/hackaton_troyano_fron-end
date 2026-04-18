@@ -2,11 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
 
 @Component({
@@ -15,11 +12,8 @@ import { MessageModule } from 'primeng/message';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    InputTextModule,
-    PasswordModule,
     ButtonModule,
     CheckboxModule,
-    CardModule,
     MessageModule
   ],
   templateUrl: './login.component.html',
@@ -29,11 +23,6 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   loading = false;
   errorMessage = '';
-  usuariosDemostracion = [
-    { usuario: 'admin', contrasena: 'admin2024', rol: 'Administrador' },
-    { usuario: 'doctor', contrasena: 'doctor', rol: 'Doctor' },
-    { usuario: 'superadmin', contrasena: 'super', rol: 'Super Administrador' }
-  ];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -70,10 +59,4 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  usarCredencialDemostracion(usuario: string, contrasena: string): void {
-    this.loginForm.patchValue({
-      username: usuario,
-      password: contrasena
-    });
-  }
 }

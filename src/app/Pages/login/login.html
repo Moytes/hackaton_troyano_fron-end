@@ -44,14 +44,14 @@
           <input
             [type]="showPassword() ? 'text' : 'password'"
             id="password"
-            pInputText
             [value]="password()"
             (input)="password.set($any($event.target).value)"
             placeholder="Ingresa tu contrasena"
-            autocomplete="current-password">
-          <i
-            class="pi eye-icon"
-            [class.pi-eye]="!showPassword()"
+            autocomplete="current-password"
+            class="password-input">
+          <i 
+            class="pi toggle-password" 
+            [class.pi-eye]="!showPassword()" 
             [class.pi-eye-slash]="showPassword()"
             (click)="showPassword.set(!showPassword())">
           </i>
