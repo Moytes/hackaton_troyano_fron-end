@@ -58,7 +58,7 @@ export class AuthService {
     'admin': 'admin2024',
     'admin@salud.siglo.gob.mx': 'admin2024',
     'doctor': 'doctor',
-    'doctor@salud.siglo.gob.mx': 'doctor',
+    'doctor@salud.siglo.gob.mx': '  ',
     'superadmin': 'super',
     'superadmin@salud.siglo.gob.mx': 'super'
   };
