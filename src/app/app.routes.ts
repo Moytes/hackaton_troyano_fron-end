@@ -57,5 +57,10 @@ export const routes: Routes = [
     loadComponent: () => import('./Pages/ayuda/ayuda').then(m => m.AyudaComponent),
     canActivate: [authGuard]
   },
+  {
+    path: 'doctor-dashboard',
+    loadComponent: () => import('./Pages/doctor-dashboard/doctor-dashboard').then(m => m.DoctorDashboardComponent),
+    canActivate: [authGuard]
+  },
   { path: '**', redirectTo: '' }
 ];

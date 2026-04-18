@@ -1,0 +1,131 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Dashboard de Citas</h1>
+      <p>Administra y monitorea tus citas médicas</p>
+    </div>
+    <button pButton icon="pi pi-refresh" class="refresh-btn" (click)="cargarCitas()"></button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error()" class="error-alert">
+    <i class="pi pi-exclamation-circle"></i>
+    <span>{{ error() }}</span>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <i class="pi pi-calendar"></i>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Total de Citas</p>
+        <p class="stat-value">{{ totalCitas() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon confirmed">
+        <i class="pi pi-check-circle"></i>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Confirmadas</p>
+        <p class="stat-value">{{ citasConfirmadas() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon completed">
+        <i class="pi pi-check"></i>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Completadas</p>
+        <p class="stat-value">{{ citasCompletadas() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon cancelled">
+        <i class="pi pi-times-circle"></i>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Canceladas</p>
+        <p class="stat-value">{{ citasCanceladas() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon patients">
+        <i class="pi pi-users"></i>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Pacientes Unicos</p>
+        <p class="stat-value">{{ pacientesUnicos() }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Citas Table -->
+  <div class="table-container">
+    <p-card class="table-card">
+      <ng-template pTemplate="header">
+        <div class="table-header">
+          <h3>Listado de Citas</h3>
+          <span class="total-badge">{{ totalCitas() }} citas</span>
+        </div>
+      </ng-template>
+
+      <div class="table-search">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="filtrarCitas($event)"
+            placeholder="Buscar por paciente, telefono o motivo..." />
+        </span>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table" *ngIf="!loading()">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Paciente</th>
+              <th>Telefono</th>
+              <th>Motivo</th>
+              <th>Fecha y Hora</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cita of citasFiltradas()">
+              <td class="cell-id">{{ cita.id }}</td>
+              <td class="cell-paciente">{{ cita.pacienteNombre }}</td>
+              <td class="cell-telefono">{{ cita.pacienteTelefono }}</td>
+              <td class="cell-motivo">{{ cita.motivo }}</td>
+              <td class="cell-fecha">
+                <span class="fecha-badge">{{ formatearFecha(cita.fechaHoraInicio) }}</span>
+              </td>
+              <td class="cell-estado">
+                <p-tag
+                  [value]="getEstadoLabel(cita.estado)"
+                  [severity]="getEstadoClass(cita.estado)"
+                  styleClass="estado-tag">
+                </p-tag>
+              </td>
+            </tr>
+            <tr *ngIf="citasFiltradas().length === 0" class="empty-row">
+              <td colspan="6" class="empty-message">
+                <i class="pi pi-inbox"></i>
+                <p>No hay citas para mostrar</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="loading()" class="skeleton-rows">
+          <p-skeleton height="50px" *ngFor="let item of [1,2,3,4,5]"></p-skeleton>
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>
