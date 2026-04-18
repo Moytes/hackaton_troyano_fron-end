@@ -4,7 +4,6 @@ import { filter } from 'rxjs/operators';
 import { HeaderComponent } from './Components/layouts/header/header';
 import { SidebarComponent } from './Components/layouts/sidebar/sidebar';
 import { AuthService } from './services/auth.service';
-import { SupabaseService } from './services/supabase.service';
 
 @Component({
   selector: 'app-root',
@@ -24,11 +23,9 @@ export class App {
   
   private router = inject(Router);
   private authService = inject(AuthService);
-  private supabaseService = inject(SupabaseService);
   
   constructor() {
     this.checkViewport();
-    this.supabaseService.testConnection();
     
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)

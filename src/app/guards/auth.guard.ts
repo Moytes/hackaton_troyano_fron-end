@@ -37,3 +37,17 @@ export const loginGuard: CanActivateFn = (route, state) => {
 
   return true;
 };
+
+export const landingGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isLoggedIn()) {
+    const rol = authService.getRol();
+    const rutaRedireccion = rol === 'doctor' ? '/citas' : '/dashboard';
+    router.navigate([rutaRedireccion]);
+    return false;
+  }
+
+  return true;
+};

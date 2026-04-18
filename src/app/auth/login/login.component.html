@@ -1,1 +1,71 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-box">
+    <div class="login-header">
+      <div class="logo-icon">
+        <i class="pi pi-heart-fill"></i>
+      </div>
+      <h1>TeleAsistencia</h1>
+      <p>Sistema de Telemedicina</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+      <div class="form-group">
+        <label for="username">Usuario o Email</label>
+        <input
+          id="username"
+          pInputText
+          formControlName="username"
+          placeholder="Ingresa tu usuario o email"
+          [class.is-invalid]="
+            loginForm.get('username')?.invalid &&
+            loginForm.get('username')?.touched
+          "
+        />
+        <small class="error" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+          El usuario es requerido
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contrasena</label>
+        <p-password
+          id="password"
+          formControlName="password"
+          placeholder="Ingresa tu contrasena"
+          [toggleMask]="true"
+          [feedback]="false"
+          [class]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched ? 'is-invalid' : ''"
+        ></p-password>
+        <small class="error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          La contrasena es requerida
+        </small>
+      </div>
+
+      <div class="form-checkbox">
+        <p-checkbox
+          formControlName="remember"
+          [binary]="true"
+          label="Recuerdame"
+        ></p-checkbox>
+      </div>
+
+      <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage"></p-message>
+
+      <button
+        pButton
+        type="submit"
+        label="Iniciar Sesion"
+        class="btn-login"
+        [loading]="loading"
+        [disabled]="loginForm.invalid || loading"
+      ></button>
+    </form>
+
+  </div>
+
+  <div class="login-background">
+    <div class="bg-element bg-1"></div>
+    <div class="bg-element bg-2"></div>
+    <div class="bg-element bg-3"></div>
+  </div>
+</div>

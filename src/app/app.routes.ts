@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
-import { authGuard, loginGuard } from './guards/auth.guard';
+import { authGuard, loginGuard, landingGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./Pages/landing/landing').then(m => m.LandingComponent)
+    loadComponent: () => import('./Pages/landing/landing').then(m => m.LandingComponent),
+    canActivate: [landingGuard]
   },
   {
     path: 'login',
@@ -51,10 +52,10 @@ export const routes: Routes = [
     loadComponent: () => import('./Pages/alertas/alertas').then(m => m.AlertasComponent),
     canActivate: [authGuard]
   },
-  { 
-    path: 'ayuda', 
+  {
+    path: 'ayuda',
     loadComponent: () => import('./Pages/ayuda/ayuda').then(m => m.AyudaComponent),
     canActivate: [authGuard]
   },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: '' }
 ];
