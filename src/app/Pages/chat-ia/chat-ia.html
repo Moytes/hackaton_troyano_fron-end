@@ -25,7 +25,7 @@
     <div class="chat-header">
       <div class="header-info">
         <p-avatar 
-          [label]="llamadaActual()?.pacienteNombre?.charAt(0) || '?'" 
+          [label]="(llamadaActual()?.pacienteNombre || '?').charAt(0)" 
           size="large" 
           shape="circle"
           styleClass="avatar-ia">

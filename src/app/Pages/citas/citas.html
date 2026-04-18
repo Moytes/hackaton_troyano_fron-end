@@ -1,100 +1,270 @@
-<div class="citas-page">
-  <div class="page-header">
-    <h1>Gestión de Citas</h1>
-    <button pButton label="Nueva Cita" icon="pi pi-plus" (click)="openAgendar()"></button>
+<div class="citas-page-container">
+  <!-- Header Rol Doctor -->
+  <div class="citas-header" [class.doctor-mode]="esDoctor()">
+    <div class="header-content">
+      <div class="header-title">
+        <i class="pi pi-calendar"></i>
+        <div>
+          <h1>{{ esDoctor() ? 'Mi Agenda Médica' : 'Gestión de Citas Médicas' }}</h1>
+          <p class="header-subtitle">
+            {{ esDoctor() ? 'Consulta y gestiona tus citas con pacientes' : 'Administra y consulta la agenda del personal médico' }}
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
-  
-  @if (proximas().length > 0) {
-    <div class="section">
-      <h2>Próximas citas</h2>
-      <div class="citas-grid">
-        @for (cita of proximas(); track cita.id) {
-          <div class="cita-card">
-            <div class="cita-header">
-              <p-avatar [label]="cita.pacienteNombre.charAt(0)" size="large" shape="circle"></p-avatar>
-              <div class="cita-info">
-                <h3>{{ cita.pacienteNombre }}</h3>
-                <span class="especialidad">{{ cita.especialidad }}</span>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-container">
+    <button (click)="activeTab.set('doctor')" [class.active]="activeTab() === 'doctor'">
+      <i class="pi pi-user-md"></i> {{ esDoctor() ? 'Mis Citas' : 'Citas por Doctor' }}
+    </button>
+    <button (click)="activeTab.set('todas')" [class.active]="activeTab() === 'todas'" *ngIf="!esDoctor()">
+      <i class="pi pi-list"></i> Todas las Citas
+    </button>
+    <button (click)="activeTab.set('detalle')" [class.active]="activeTab() === 'detalle'">
+      <i class="pi pi-search"></i> Buscar Cita
+    </button>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Vista por Doctor / Mis Citas -->
+    <div *ngIf="activeTab() === 'doctor'" class="tab-content doctor-view">
+      <!-- Stats Cards para Doctores -->
+      <div *ngIf="esDoctor()" class="stats-grid">
+        <div class="stat-card confirmadas">
+          <div class="stat-icon"><i class="pi pi-check-circle"></i></div>
+          <div class="stat-content">
+            <p class="stat-label">Confirmadas</p>
+            <p class="stat-value">{{ citasConfirmadas() }}</p>
+          </div>
+        </div>
+        <div class="stat-card completadas">
+          <div class="stat-icon"><i class="pi pi-check"></i></div>
+          <div class="stat-content">
+            <p class="stat-label">Completadas</p>
+            <p class="stat-value">{{ citasCompletadas() }}</p>
+          </div>
+        </div>
+        <div class="stat-card pendientes">
+          <div class="stat-icon"><i class="pi pi-clock"></i></div>
+          <div class="stat-content">
+            <p class="stat-label">Pendientes</p>
+            <p class="stat-value">{{ citasPendientes() }}</p>
+          </div>
+        </div>
+        <div class="stat-card canceladas">
+          <div class="stat-icon"><i class="pi pi-times-circle"></i></div>
+          <div class="stat-content">
+            <p class="stat-label">Canceladas</p>
+            <p class="stat-value">{{ citasCanceladas() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Panel para Admin -->
+      <div *ngIf="!esDoctor()" class="search-panel">
+        <div class="p-inputgroup">
+          <span class="p-inputgroup-addon"><i class="pi pi-user-md"></i></span>
+          <input type="number" pInputText placeholder="Ingrese el código del Doctor" [(ngModel)]="selectedDoctorId" (keyup.enter)="cargarCitasDoctor()">
+          <button pButton icon="pi pi-search" (click)="cargarCitasDoctor()" label="Cargar Citas" class="p-button-teal"></button>
+        </div>
+      </div>
+
+      <!-- Tabla de Citas del Doctor -->
+      <div class="section-title">
+        <i class="pi pi-calendar-times"></i>
+        <h2>{{ esDoctor() ? 'Mis Citas Próximas' : 'Citas Agendadas' }}</h2>
+      </div>
+      <ng-container *ngTemplateOutlet="citasTable; context: { $implicit: citasDoctor() }"></ng-container>
+
+      <!-- Tabla de Pacientes del Doctor -->
+      <div *ngIf="esDoctor() && pacientesUnicos().length > 0" class="section-title" style="margin-top: 3rem;">
+        <i class="pi pi-users"></i>
+        <h2>Mis Pacientes</h2>
+      </div>
+      <div *ngIf="esDoctor() && pacientesUnicos().length > 0" class="table-card shadow-soft">
+        <p-table
+          [value]="pacientesUnicos()"
+          [paginator]="true"
+          [rows]="10"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} pacientes"
+          styleClass="p-datatable-sm p-datatable-striped uniform-table"
+          [responsiveLayout]="'scroll'"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="nombre" style="width: 50%">Paciente <p-sortIcon field="nombre"></p-sortIcon></th>
+              <th style="width: 30%">Contacto Directo</th>
+              <th pSortableColumn="citasCount" style="width: 20%; text-align: center">Historial <p-sortIcon field="citasCount"></p-sortIcon></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-paciente>
+            <tr class="uniform-row">
+              <td>
+                <div class="paciente-cell-uniform">
+                  <div class="paciente-avatar-uniform">{{ paciente.nombre?.charAt(0) || '?' }}</div>
+                  <div class="paciente-info-uniform">
+                    <p class="paciente-nombre-uniform">{{ paciente.nombre }}</p>
+                    <span class="paciente-tag">Paciente Activo</span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="contacto-pill"><i class="pi pi-phone"></i> {{ paciente.telefono }}</span></td>
+              <td style="text-align: center"><span class="citas-badge">{{ paciente.citasCount }} Citas</span></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">
+                <div class="empty-state-uniform">
+                  <i class="pi pi-users"></i>
+                  <p>No hay pacientes registrados en su agenda</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <!-- Vista Todas (Solo para Admin) -->
+    <div *ngIf="activeTab() === 'todas'" class="tab-content">
+      <div class="action-bar">
+        <button pButton icon="pi pi-refresh" label="Actualizar Listado" (click)="cargarTodasLasCitas()" class="p-button-outlined p-button-teal"></button>
+      </div>
+      <div class="section-title">
+        <i class="pi pi-list"></i>
+        <h2>Todas las Citas</h2>
+      </div>
+      <ng-container *ngTemplateOutlet="citasTable; context: { $implicit: todasLasCitas() }"></ng-container>
+    </div>
+
+    <!-- Vista Detalle / Búsqueda -->
+    <div *ngIf="activeTab() === 'detalle'" class="tab-content detail-view">
+      <div class="search-panel">
+        <div class="p-inputgroup">
+          <span class="p-inputgroup-addon"><i class="pi pi-search"></i></span>
+          <input type="number" pInputText placeholder="Ingrese el código de la Cita" [(ngModel)]="citaIdBusqueda" (keyup.enter)="buscarCitaPorId()">
+          <button pButton icon="pi pi-search" (click)="buscarCitaPorId()" label="Buscar Cita" class="p-button-teal"></button>
+        </div>
+      </div>
+
+      <div *ngIf="error()" class="error-message">
+        <i class="pi pi-exclamation-triangle"></i>
+        {{ error() }}
+      </div>
+
+      <div *ngIf="citaSeleccionada() as cita" class="detalle-card-modern animate-fade-in">
+        <div class="detalle-header-modern">
+          <div class="header-left">
+            <div class="status-indicator" [attr.data-status]="cita.estado"></div>
+            <h3>Resumen de la Cita</h3>
+          </div>
+          <p-tag [value]="getEstadoLabel(cita.estado)" [severity]="getEstadoClass(cita.estado)" styleClass="status-pill-large"></p-tag>
+        </div>
+
+        <div class="detalle-content-grid">
+          <div class="info-group">
+            <div class="info-item">
+              <label><i class="pi pi-user"></i> Información del Paciente</label>
+              <div class="patient-preview">
+                <div class="preview-avatar">{{ cita.pacienteNombre.charAt(0) }}</div>
+                <div>
+                  <p class="main-val">{{ cita.pacienteNombre }}</p>
+                  <p class="sub-val">{{ cita.pacienteTelefono }}</p>
+                </div>
               </div>
             </div>
-            <div class="cita-fecha">
-              <i class="pi pi-calendar"></i>
-              <span>{{ formatFecha(cita.fecha) }}</span>
-            </div>
-            <div class="cita-fecha">
-              <i class="pi pi-clock"></i>
-              <span>{{ formatHora(cita.fecha) }}</span>
-            </div>
-            <div class="cita-footer">
-              <span class="doctor">{{ cita.doctorNombre }}</span>
-              <p-tag [value]="cita.estado | titlecase" [severity]="getEstadoSeverity(cita.estado)"></p-tag>
-            </div>
           </div>
-        }
-      </div>
-    </div>
-  }
-  
-  @if (citas().length === 0) {
-    <div class="empty-state">
-      <i class="pi pi-calendar"></i>
-      <p>No hay citas agendadas</p>
-      <button pButton label="Agendar primera cita" (click)="openAgendar()"></button>
-    </div>
-  }
-</div>
 
-@if (showAgendar()) {
-  <div class="dialog-overlay" (click)="closeAgendar()">
-    <div class="dialog-content" (click)="$event.stopPropagation()">
-      <div class="dialog-header">
-        <h2>Agendar Cita</h2>
-        <button pButton icon="pi pi-times" class="p-button-text" (click)="closeAgendar()"></button>
-      </div>
-      
-      <div class="agendar-form">
-        <div class="form-group">
-          <label>Seleccionar especialista</label>
-          <p-select 
-            [options]="opcionesDoctores"
-            [(ngModel)]="selectedDoctor"
-            placeholder="Elige un doctor"
-            optionLabel="label"
-            [style]="{width: '100%'}">
-          </p-select>
-        </div>
-        
-        <div class="form-group">
-          <label>Fecha</label>
-          <p-select 
-            [options]="opcionesFechas"
-            [(ngModel)]="selectedFecha"
-            placeholder="Elige fecha"
-            optionLabel="label"
-            [style]="{width: '100%'}">
-          </p-select>
-        </div>
-        
-        <div class="form-group">
-          <label>Horário</label>
-          <div class="horarios-grid">
-            @for (hora of opcionesHoras; track hora) {
-              <button 
-                pButton 
-                [label]="hora"
-                class="p-button-outlined"
-                [class.p-button-primary]="selectedHora() === hora"
-                (click)="selectedHora.set(hora)">
-              </button>
-            }
+          <div class="info-group">
+            <div class="info-item">
+              <label><i class="pi pi-calendar"></i> Fecha Programada</label>
+              <p class="main-val">{{ formatearFechaSolo(cita.fechaHoraInicio) }}</p>
+              <p class="sub-val"><i class="pi pi-clock"></i> {{ formatearHora(cita.fechaHoraInicio) }} ({{ calcularDuracion(cita.fechaHoraInicio, cita.fechaHoraFin) }})</p>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div class="dialog-footer">
-        <button pButton label="Cancelar" class="p-button-text" (click)="closeAgendar()"></button>
-        <button pButton label="Confirmar Cita" (click)="agendar()" [disabled]="!selectedDoctor() || !selectedFecha() || !selectedHora()"></button>
+
+        <div class="detalle-footer-modern">
+          <label><i class="pi pi-align-left"></i> Motivo de la Consulta</label>
+          <div class="motivo-box-modern">
+            {{ cita.motivo || 'Sin observaciones registradas' }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
-}
+</div>
+
+<!-- Template Reutilizable para la Tabla Pro -->
+<ng-template #citasTable let-data>
+  <div class="table-card shadow-soft">
+    <p-table
+      [value]="data"
+      [paginator]="true"
+      [rows]="10"
+      [loading]="loading()"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+      styleClass="p-datatable-sm p-datatable-striped uniform-table"
+      [responsiveLayout]="'scroll'"
+      [rowHover]="true"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="pacienteNombre" style="width: 35%">Paciente <p-sortIcon field="pacienteNombre"></p-sortIcon></th>
+          <th style="width: 20%">Horario</th>
+          <th style="width: 25%">Motivo</th>
+          <th style="width: 20%; text-align: center">Estado</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-cita>
+        <tr [class.cita-urgente]="esCitaProxima(cita.fechaHoraInicio)" class="uniform-row">
+          <td>
+            <div class="paciente-cell-uniform">
+              <div class="paciente-avatar-uniform" [attr.data-initials]="cita.pacienteNombre.charAt(0)">
+                {{ cita.pacienteNombre.charAt(0).toUpperCase() || '?' }}
+              </div>
+              <div class="paciente-info-uniform">
+                <p class="paciente-nombre-uniform">{{ cita.pacienteNombre }}</p>
+                <span class="contacto-mini"><i class="pi pi-phone"></i> {{ cita.pacienteTelefono }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="horario-cell-uniform">
+              <span class="fecha-val">{{ formatearFechaSolo(cita.fechaHoraInicio) }}</span>
+              <span class="hora-val"><i class="pi pi-clock"></i> {{ formatearHora(cita.fechaHoraInicio) }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="motivo-badge-uniform" [pTooltip]="cita.motivo" tooltipPosition="top">
+              <i class="pi pi-info-circle"></i>
+              <span class="truncate-text">{{ cita.motivo || 'No especificado' }}</span>
+            </div>
+          </td>
+          <td style="text-align: center">
+            <p-tag
+              [value]="getEstadoLabel(cita.estado)"
+              [severity]="getEstadoClass(cita.estado)"
+              styleClass="status-pill-uniform">
+            </p-tag>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4">
+            <div class="empty-state-uniform">
+              <i class="pi pi-calendar-times"></i>
+              <p>No se encontraron citas en este listado</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</ng-template>

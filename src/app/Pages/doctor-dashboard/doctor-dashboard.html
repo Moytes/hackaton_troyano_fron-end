@@ -1,22 +1,34 @@
 <div class="dashboard-container">
+  <!-- Header Principal -->
   <div class="dashboard-header">
     <div class="header-content">
-      <h1>Dashboard de Citas</h1>
-      <p>Administra y monitorea tus citas médicas</p>
+      <div class="header-top">
+        <h1>Mi Agenda de Citas</h1>
+        <button pButton icon="pi pi-refresh" class="refresh-btn" (click)="cargarCitas()" pTooltip="Actualizar citas"></button>
+      </div>
+      <div class="doctor-info">
+        <i class="pi pi-user-md"></i>
+        <div>
+          <p class="doctor-name">{{ nombreDoctor() }}</p>
+          <p class="doctor-specialty">{{ especialidad() }}</p>
+        </div>
+      </div>
     </div>
-    <button pButton icon="pi pi-refresh" class="refresh-btn" (click)="cargarCitas()"></button>
   </div>
 
-  <!-- Error Message -->
+  <!-- Mensaje de Error -->
   <div *ngIf="error()" class="error-alert">
     <i class="pi pi-exclamation-circle"></i>
-    <span>{{ error() }}</span>
+    <div>
+      <p class="error-title">Error al cargar citas</p>
+      <p class="error-message">{{ error() }}</p>
+    </div>
   </div>
 
-  <!-- Stats Cards -->
+  <!-- Cards de Estadísticas -->
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon total">
+    <div class="stat-card total">
+      <div class="stat-icon">
         <i class="pi pi-calendar"></i>
       </div>
       <div class="stat-content">
@@ -25,8 +37,18 @@
       </div>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-icon confirmed">
+    <div class="stat-card pending">
+      <div class="stat-icon">
+        <i class="pi pi-clock"></i>
+      </div>
+      <div class="stat-content">
+        <p class="stat-label">Pendientes</p>
+        <p class="stat-value">{{ citasPendientes() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card confirmed">
+      <div class="stat-icon">
         <i class="pi pi-check-circle"></i>
       </div>
       <div class="stat-content">
@@ -35,8 +57,8 @@
       </div>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-icon completed">
+    <div class="stat-card completed">
+      <div class="stat-icon">
         <i class="pi pi-check"></i>
       </div>
       <div class="stat-content">
@@ -45,8 +67,8 @@
       </div>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-icon cancelled">
+    <div class="stat-card cancelled">
+      <div class="stat-icon">
         <i class="pi pi-times-circle"></i>
       </div>
       <div class="stat-content">
@@ -55,75 +77,143 @@
       </div>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-icon patients">
+    <div class="stat-card patients">
+      <div class="stat-icon">
         <i class="pi pi-users"></i>
       </div>
       <div class="stat-content">
-        <p class="stat-label">Pacientes Unicos</p>
+        <p class="stat-label">Pacientes Únicos</p>
         <p class="stat-value">{{ pacientesUnicos() }}</p>
       </div>
     </div>
   </div>
 
-  <!-- Citas Table -->
-  <div class="table-container">
-    <p-card class="table-card">
+  <!-- Sección de Citas -->
+  <div class="citas-section">
+    <p-card class="citas-card">
       <ng-template pTemplate="header">
-        <div class="table-header">
-          <h3>Listado de Citas</h3>
-          <span class="total-badge">{{ totalCitas() }} citas</span>
+        <div class="citas-header-card">
+          <h2>Listado de Citas ({{ citasFiltradas().length }})</h2>
         </div>
       </ng-template>
 
-      <div class="table-search">
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"></i>
-          <input pInputText type="text" (input)="filtrarCitas($event)"
-            placeholder="Buscar por paciente, telefono o motivo..." />
-        </span>
+      <!-- Filtros -->
+      <div class="filters-container">
+        <div class="filter-search">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" (input)="filtrarCitas($event)"
+              placeholder="Buscar por paciente, teléfono o motivo..." />
+          </span>
+        </div>
+
+        <div class="filter-estado">
+          <select (change)="filtrarPorEstado($event)" class="estado-select">
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="confirmada">Confirmada</option>
+            <option value="completada">Completada</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+        </div>
       </div>
 
-      <div class="table-wrapper">
-        <table class="data-table" *ngIf="!loading()">
-          <thead>
+      <!-- Tabla de Citas Pro con PrimeNG -->
+      <div class="citas-table-wrapper" *ngIf="!loading()">
+        <p-table 
+          [value]="citasFiltradas()" 
+          [paginator]="true" 
+          [rows]="10" 
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} citas"
+          [rowsPerPageOptions]="[5, 10, 25, 50]"
+          styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+          [responsiveLayout]="'scroll'"
+          [rowHover]="true"
+          sortMode="multiple"
+          class="custom-table"
+        >
+          <ng-template pTemplate="header">
             <tr>
-              <th>ID</th>
-              <th>Paciente</th>
-              <th>Telefono</th>
-              <th>Motivo</th>
-              <th>Fecha y Hora</th>
-              <th>Estado</th>
+              <th pSortableColumn="id" class="col-id">ID <p-sortIcon field="id"></p-sortIcon></th>
+              <th pSortableColumn="pacienteNombre" class="col-paciente">Paciente <p-sortIcon field="pacienteNombre"></p-sortIcon></th>
+              <th pSortableColumn="pacienteId" class="col-paciente-id">ID Paciente <p-sortIcon field="pacienteId"></p-sortIcon></th>
+              <th class="col-telefono">Teléfono</th>
+              <th class="col-motivo">Motivo</th>
+              <th pSortableColumn="fechaHoraInicio" class="col-fecha">Agenda <p-sortIcon field="fechaHoraInicio"></p-sortIcon></th>
+              <th class="col-duracion">Duración</th>
+              <th pSortableColumn="estado" class="col-estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+              <th pSortableColumn="createdAt" class="col-creado">Registrada <p-sortIcon field="createdAt"></p-sortIcon></th>
             </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let cita of citasFiltradas()">
-              <td class="cell-id">{{ cita.id }}</td>
-              <td class="cell-paciente">{{ cita.pacienteNombre }}</td>
-              <td class="cell-telefono">{{ cita.pacienteTelefono }}</td>
-              <td class="cell-motivo">{{ cita.motivo }}</td>
-              <td class="cell-fecha">
-                <span class="fecha-badge">{{ formatearFecha(cita.fechaHoraInicio) }}</span>
+          </ng-template>
+          <ng-template pTemplate="body" let-cita>
+            <tr [class.cita-proxima]="esCitaProxima(cita.fechaHoraInicio)">
+              <td>
+                <span class="id-badge">{{ cita.id }}</span>
               </td>
-              <td class="cell-estado">
-                <p-tag
-                  [value]="getEstadoLabel(cita.estado)"
+              <td>
+                <div class="paciente-cell">
+                  <div class="paciente-avatar">
+                    {{ cita.pacienteNombre.charAt(0) || 'P' }}
+                  </div>
+                  <span class="paciente-nombre">{{ cita.pacienteNombre }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="paciente-id-text">{{ cita.pacienteId }}</span>
+              </td>
+              <td>
+                <span class="telefono-text">
+                  <i class="pi pi-phone" style="font-size: 0.8rem; margin-right: 4px; opacity: 0.6;"></i>
+                  {{ cita.pacienteTelefono }}
+                </span>
+              </td>
+              <td>
+                <div class="motivo-wrapper" [pTooltip]="cita.motivo" tooltipPosition="top">
+                  {{ cita.motivo }}
+                </div>
+              </td>
+              <td>
+                <div class="agenda-cell">
+                  <span class="fecha-main">{{ formatearFechaSolo(cita.fechaHoraInicio) }}</span>
+                  <span class="hora-sub">{{ formatearHora(cita.fechaHoraInicio) }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="duracion-tag">
+                  <i class="pi pi-clock" style="font-size: 0.7rem; margin-right: 3px;"></i>
+                  {{ calcularDuracion(cita.fechaHoraInicio, cita.fechaHoraFin) }}
+                </span>
+              </td>
+              <td>
+                <p-tag 
+                  [value]="getEstadoLabel(cita.estado)" 
                   [severity]="getEstadoClass(cita.estado)"
-                  styleClass="estado-tag">
+                  styleClass="custom-tag">
                 </p-tag>
               </td>
-            </tr>
-            <tr *ngIf="citasFiltradas().length === 0" class="empty-row">
-              <td colspan="6" class="empty-message">
-                <i class="pi pi-inbox"></i>
-                <p>No hay citas para mostrar</p>
+              <td>
+                <span class="created-at-text">{{ formatearFechaCreacion(cita.createdAt) }}</span>
               </td>
             </tr>
-          </tbody>
-        </table>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="9">
+                <div class="empty-state-container">
+                  <i class="pi pi-calendar-times"></i>
+                  <p>No se encontraron citas con los criterios seleccionados</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
 
-        <div *ngIf="loading()" class="skeleton-rows">
-          <p-skeleton height="50px" *ngFor="let item of [1,2,3,4,5]"></p-skeleton>
+      <!-- Skeleton Loading -->
+      <div *ngIf="loading()" class="skeleton-loading">
+        <div class="skeleton-row" *ngFor="let item of [1,2,3,4,5,6]">
+          <p-skeleton height="60px"></p-skeleton>
         </div>
       </div>
     </p-card>

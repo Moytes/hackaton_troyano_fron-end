@@ -1,1 +1,147 @@
-<p>doctor works!</p>
+<div class="doctors-container">
+  <!-- Header -->
+  <div class="doctors-header">
+    <div class="header-content">
+      <div class="header-top">
+        <h1><i class="pi pi-users"></i> Panel de Doctores</h1>
+        <button pButton icon="pi pi-refresh" (click)="cargarEstadisticasDoctores()" class="refresh-btn" pTooltip="Actualizar datos"></button>
+      </div>
+      <p class="header-subtitle">Gestión y seguimiento del equipo médico</p>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="pi pi-users"></i></div>
+      <div class="stat-content">
+        <p class="stat-label">Total Doctores</p>
+        <p class="stat-value">{{ totalDoctores() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card active">
+      <div class="stat-icon"><i class="pi pi-check-circle"></i></div>
+      <div class="stat-content">
+        <p class="stat-label">Doctores Activos</p>
+        <p class="stat-value">{{ doctoresActivos() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card inactive">
+      <div class="stat-icon"><i class="pi pi-times-circle"></i></div>
+      <div class="stat-content">
+        <p class="stat-label">Doctores Inactivos</p>
+        <p class="stat-value">{{ doctoresInactivos() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card citas">
+      <div class="stat-icon"><i class="pi pi-calendar"></i></div>
+      <div class="stat-content">
+        <p class="stat-label">Total Citas</p>
+        <p class="stat-value">{{ totalCitasAsignadas() }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Actions -->
+  <div class="filters-section">
+    <div class="filter-search">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          type="text"
+          (input)="filtrarDoctores($event)"
+          placeholder="Buscar por nombre o especialidad...">
+      </span>
+    </div>
+
+    <button
+      pButton
+      [label]="mostrarSoloActivos() ? 'Ver Todos' : 'Solo Activos'"
+      [icon]="mostrarSoloActivos() ? 'pi pi-list' : 'pi pi-filter'"
+      (click)="toggleFiltroActivos()"
+      [ngClass]="{ 'p-button-success': mostrarSoloActivos(), 'p-button-secondary': !mostrarSoloActivos() }">
+    </button>
+  </div>
+
+  <!-- Tabla de Doctores -->
+  <div class="table-card">
+    <p-table
+      [value]="doctoresFiltrados()"
+      [paginator]="true"
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} doctores"
+      [rowsPerPageOptions]="[5, 10, 25]"
+      styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+      [responsiveLayout]="'scroll'"
+      [loading]="loading()"
+      class="doctors-table"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id" style="width: 80px">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="nombre">Doctor <p-sortIcon field="nombre"></p-sortIcon></th>
+          <th pSortableColumn="especialidad">Especialidad <p-sortIcon field="especialidad"></p-sortIcon></th>
+          <th pSortableColumn="activo" style="width: 120px">Estado <p-sortIcon field="activo"></p-sortIcon></th>
+          <th pSortableColumn="citasAsignadas" style="width: 100px">Citas <p-sortIcon field="citasAsignadas"></p-sortIcon></th>
+          <th pSortableColumn="pacientesAtendidos" style="width: 120px">Pacientes <p-sortIcon field="pacientesAtendidos"></p-sortIcon></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-doctor>
+        <tr [class.doctor-activo]="doctor.activo" [class.doctor-inactivo]="!doctor.activo">
+          <td><span class="id-badge">{{ doctor.id }}</span></td>
+          <td>
+            <div class="doctor-cell">
+              <div class="doctor-avatar" [ngClass]="doctor.activo ? 'activo' : 'inactivo'">
+                {{ doctor.nombre?.charAt(0) || '?' }}
+              </div>
+              <div class="doctor-info">
+                <p class="doctor-name">{{ doctor.nombre }}</p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="especialidad-badge">
+              <i class="pi pi-stethoscope"></i>
+              {{ doctor.especialidad }}
+            </span>
+          </td>
+          <td>
+            <p-tag
+              [value]="getEstadoLabel(doctor.activo)"
+              [severity]="getEstadoClass(doctor.activo)">
+            </p-tag>
+          </td>
+          <td>
+            <span class="citas-count" [ngClass]="doctor.citasAsignadas > 0 ? 'has-citas' : ''">
+              <i class="pi pi-calendar"></i>
+              {{ doctor.citasAsignadas }}
+            </span>
+          </td>
+          <td>
+            <span class="pacientes-count" [ngClass]="doctor.pacientesAtendidos > 0 ? 'has-pacientes' : ''">
+              <i class="pi pi-users"></i>
+              {{ doctor.pacientesAtendidos }}
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <i class="pi pi-inbox"></i>
+              <p>No se encontraron doctores con los criterios seleccionados</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

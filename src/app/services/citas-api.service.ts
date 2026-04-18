@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface Cita {
   id: number;
@@ -21,7 +22,7 @@ export interface Cita {
 })
 export class CitasApiService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://hackaton-ms-citas-production.up.railway.app/api/citas';
+  private apiUrl = environment.apiCitasUrl;
 
   private citasSubject = new BehaviorSubject<Cita[]>([]);
   citas$ = this.citasSubject.asObservable();
@@ -37,6 +38,23 @@ export class CitasApiService {
   }
 
   obtenerCitasPorDoctor(doctorId: number): Observable<Cita[]> {
-    return this.http.get<Cita[]>(`${this.apiUrl}?doctorId=${doctorId}`);
+    // Seguridad: Evitamos el crash si apiUrl es undefined
+    const safeUrl = this.apiUrl || 'https://hackaton-ms-citas-production.up.railway.app/api/citas';
+    
+    let baseUrl = safeUrl;
+    if (safeUrl.includes('/api/citas')) {
+      baseUrl = safeUrl.split('/api/citas')[0] + '/api/citas';
+    }
+
+    const url = `${baseUrl}?doctorId=${doctorId}`;
+    
+    console.log('🚀 [API] Petición de Citas para Doctor:', doctorId);
+    console.log('🔗 URL Final:', url);
+
+    return this.http.get<Cita[]>(url).pipe(
+      tap(response => {
+        console.log('✅ [API] Citas recuperadas:', response?.length || 0);
+      })
+    );
   }
 }
