@@ -11,7 +11,7 @@
         <p-tag [value]="getLabel(llamada()!.clasificacion)" [severity]="getSeverity(llamada()!.clasificacion)" class="clasificacion-tag"></p-tag>
       </div>
       <h1>{{ llamada()!.pacienteNombre }}</h1>
-      <span class="tipo">{{ llamada()!.tipo | titlecase }} - {{ formatHora(llamada()!.horaInicio) }}</span>
+      <span class="tipo">{{ llamada()!.tipo | titlecase }} - {{ fechaService.getDiaLabel(llamada()!.horaInicio) }} {{ fechaService.formatHora(llamada()!.horaInicio) }}</span>
     </div>
     
     <div class="paciente-card">
@@ -36,7 +36,36 @@
         <p>{{ llamada()!.resumenIA }}</p>
       </p-panel>
     }
-    
+
+    <p-panel header="Conversación en Tiempo Real" [toggleable]="true" class="panel-conversacion">
+      <div class="conexion-status">
+        @if (streamConnected()) {
+          <span class="estado-conectado">🟢 Conectado al stream</span>
+        } @else {
+          <span class="estado-desconectado">🔴 Desconectado</span>
+        }
+      </div>
+
+      <div #conversationScroll class="conversacion-container">
+        @if (transcriptions().length > 0) {
+          @for (msg of transcriptions(); track msg.ts) {
+            <div class="mensaje" [ngClass]="'mensaje-' + msg.role">
+              <div class="mensaje-header">
+                <span class="role-label">{{ getRoleLabel(msg.role) }}</span>
+                <span class="timestamp">{{ formatTimestamp(msg.ts) }}</span>
+              </div>
+              <div class="mensaje-content">{{ msg.content }}</div>
+            </div>
+          }
+        } @else {
+          <div class="sin-conversacion">
+            <i class="pi pi-inbox"></i>
+            <p>Sin mensajes aún. Esperando conversación en tiempo real...</p>
+          </div>
+        }
+      </div>
+    </p-panel>
+
     <div class="acciones">
       <button pButton label="Transferir" icon="pi pi-user-plus" class="p-button-outlined"></button>
       <button pButton label="Agendar cita" icon="pi pi-calendar" routerLink="/citas"></button>

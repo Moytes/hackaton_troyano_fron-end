@@ -3,30 +3,38 @@ export type NivelTriage = 1 | 2 | 3 | 4 | 5;
 export type EstadoLlamada = 'entrante' | 'en_proceso' | 'escalada' | 'resuelta' | 'cancelada';
 export type TipoLlamada = 'emergencia' | 'consulta' | 'seguimiento' | 'recordatorio';
 
+export interface Transcription {
+  ts: string;
+  role: 'paciente' | 'ia' | 'sistema';
+  content: string;
+}
+
 export interface Llamada {
   id: string;
   pacienteId: string;
   pacienteNombre: string;
-  
+
   clasificacion: Clasificacion;
   nivelTriage: NivelTriage;
-  
+
   estado: EstadoLlamada;
   tipo: TipoLlamada;
-  
+
   sintomasIniciales: string[];
   descripcion: string;
   duracion?: number;
-  
+
   resumenIA?: string;
   recomendacionesIA?: string[];
-  
+
   horaInicio: Date;
   horaFin?: Date;
   horaEscalada?: Date;
-  
+
   agenteId?: string;
   agenteEspecializado?: string;
+
+  transcriptions?: Transcription[];
 }
 
 export interface FiltroLlamadas {

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PanelModule } from 'primeng/panel';
 import { AvatarModule } from 'primeng/avatar';
 import { LlamadasService } from '../../services/llamadas.service';
+import { LlamadasStreamService } from '../../services/llamadas-stream.service';
 import { PacientesService } from '../../services/pacientes.service';
+import { FechaService } from '../../services/fecha.service';
 import { Llamada } from '../../models/llamada.model';
 
 @Component({
@@ -18,12 +20,42 @@ import { Llamada } from '../../models/llamada.model';
   templateUrl: './llamadas.html',
   styleUrl: './llamadas.css'
 })
-export class LlamadasComponent implements OnInit {
+export class LlamadasComponent implements OnInit, OnDestroy {
   private llamadasService = inject(LlamadasService);
+  private streamService = inject(LlamadasStreamService);
   private pacientesService = inject(PacientesService);
+  protected fechaService = inject(FechaService);
+
+  streamConnected = this.streamService.isStreamConnected;
+  streamError = this.streamService.errorMessage;
 
   ngOnInit() {
+    console.log('🚀 [LLAMADAS COMPONENT] Inicializando componente...');
     this.llamadasService.cargarLlamadasDelBackend();
+    this.iniciarStream();
+  }
+
+  ngOnDestroy() {
+    console.log('🛑 [LLAMADAS COMPONENT] Destruyendo componente, desconectando stream...');
+    this.streamService.disconnectStream();
+  }
+
+  private iniciarStream(): void {
+    console.log('📡 [LLAMADAS COMPONENT] Iniciando conexión al stream...');
+
+    this.streamService.connectStream(
+      (nuevaLlamada: Llamada) => {
+        console.log('🔔 [LLAMADAS COMPONENT] Nueva llamada recibida:', nuevaLlamada);
+        this.llamadasService.agregarOActualizar(nuevaLlamada);
+      },
+      (llamadaActualizada: Llamada) => {
+        console.log('🔄 [LLAMADAS COMPONENT] Llamada actualizada:', llamadaActualizada);
+        this.llamadasService.agregarOActualizar(llamadaActualizada);
+      },
+      (status: any) => {
+        console.log('📊 [LLAMADAS COMPONENT] Estado del stream:', status);
+      }
+    );
   }
   
   searchQuery = signal('');
@@ -65,7 +97,11 @@ export class LlamadasComponent implements OnInit {
     if (!paciente) return [];
     return this.llamadasService.getLlamadasPorPaciente(paciente.id).slice(0, 5);
   });
-  
+
+  isReciente(index: number): boolean {
+    return index === 0 && this.llamadasFiltradas().length > 0;
+  }
+
   buscar(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
@@ -123,13 +159,13 @@ export class LlamadasComponent implements OnInit {
   
   formatHora(date?: Date): string {
     if (!date) return '--:--';
-    return new Date(date).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    return this.fechaService.formatHora(date);
   }
-  
+
   formatFecha(date: Date): string {
-    return new Date(date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+    return this.fechaService.formatFechaCorta(date);
   }
-  
+
   formatDuracion(segundos?: number): string {
     if (!segundos) return '--:--';
     const mins = Math.floor(segundos / 60);
@@ -139,8 +175,7 @@ export class LlamadasComponent implements OnInit {
 
   formatFechaHora(date: Date): string {
     if (!date) return '--/--';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    return this.fechaService.formatFechaHora(date);
   }
 
   getAgenteNombre(agenteId?: string): string {

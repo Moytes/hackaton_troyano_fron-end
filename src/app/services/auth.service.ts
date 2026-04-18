@@ -23,12 +23,44 @@ export class AuthService {
       fechaRegistro: new Date('2024-01-01'),
       ultimoAcceso: new Date(),
       activo: true
+    },
+    {
+      id: 'u2',
+      username: 'doctor',
+      nombre: 'Carlos',
+      apellidoPaterno: 'García',
+      apellidoMaterno: 'Rodríguez',
+      email: 'doctor@salud.siglo.gob.mx',
+      especialidad: 'Medicina General',
+      rol: 'doctor',
+      fotoUrl: '',
+      fechaRegistro: new Date('2024-01-05'),
+      ultimoAcceso: new Date(),
+      activo: true
+    },
+    {
+      id: 'u3',
+      username: 'superadmin',
+      nombre: 'Supervisor',
+      apellidoPaterno: 'Sistema',
+      apellidoMaterno: 'Admin',
+      email: 'superadmin@salud.siglo.gob.mx',
+      especialidad: 'Administración Sistema',
+      rol: 'superadmin',
+      fotoUrl: '',
+      fechaRegistro: new Date('2023-12-01'),
+      ultimoAcceso: new Date(),
+      activo: true
     }
   ];
 
   private readonly passwords: Record<string, string> = {
     'admin': 'admin2024',
-    'admin@salud.siglo.gob.mx': 'admin2024'
+    'admin@salud.siglo.gob.mx': 'admin2024',
+    'doctor': 'doctor',
+    'doctor@salud.siglo.gob.mx': 'doctor',
+    'superadmin': 'super',
+    'superadmin@salud.siglo.gob.mx': 'super'
   };
 
   readonly usuario = computed(() => this.usuarioActual());
@@ -43,8 +75,8 @@ export class AuthService {
     const password = credenciales.password;
 
     const esEmail = username.includes('@');
-    
-    const usuario = this.usuariosEstaticos.find(u => 
+
+    const usuario = this.usuariosEstaticos.find(u =>
       (!esEmail && u.username.toLowerCase() === username) ||
       (esEmail && u.email.toLowerCase() === username)
     );
@@ -52,10 +84,7 @@ export class AuthService {
     if (usuario && this.passwords[username] === password) {
       this.usuarioActual.set({ ...usuario, ultimoAcceso: new Date() });
       this.Remember.set(recordarme);
-
-      if (recordarme) {
-        this.guardarSesion();
-      }
+      this.guardarSesion();
 
       const rutaRedireccion = usuario.rol === 'doctor' ? '/citas' : '/dashboard';
       this.router.navigate([rutaRedireccion]);

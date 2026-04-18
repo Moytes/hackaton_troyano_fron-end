@@ -117,3 +117,149 @@
   color: var(--text-secondary);
   margin-bottom: var(--spacing-lg);
 }
+
+.panel-conversacion {
+  margin-bottom: var(--spacing-lg);
+}
+
+.conexion-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.estado-conectado {
+  color: #22863a;
+  font-weight: 500;
+}
+
+.estado-desconectado {
+  color: #cb2431;
+  font-weight: 500;
+}
+
+.conversacion-container {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.conversacion-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.conversacion-container::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 3px;
+}
+
+.conversacion-container::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.conversacion-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+.sin-conversacion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.sin-conversacion i {
+  font-size: 48px;
+  opacity: 0.3;
+  margin-bottom: var(--spacing-md);
+}
+
+.sin-conversacion p {
+  font-size: 14px;
+}
+
+.mensaje {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mensaje-paciente {
+  align-self: flex-start;
+  max-width: 80%;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px 12px 12px 0;
+}
+
+.mensaje-ia {
+  align-self: flex-end;
+  max-width: 80%;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 12px 12px 0 12px;
+}
+
+.mensaje-sistema {
+  align-self: center;
+  max-width: 70%;
+  background: var(--warn-light, #fff3cd);
+  color: var(--warn-dark, #856404);
+  text-align: center;
+  font-size: 12px;
+  border-radius: var(--radius-md);
+  padding: 6px 12px !important;
+}
+
+.mensaje-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  opacity: 0.8;
+  gap: var(--spacing-xs);
+}
+
+.role-label {
+  font-weight: 600;
+}
+
+.timestamp {
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.mensaje-content {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.4;
+}

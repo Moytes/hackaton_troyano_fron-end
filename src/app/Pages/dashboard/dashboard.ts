@@ -9,6 +9,7 @@ import { LlamadasService } from '../../services/llamadas.service';
 import { CitasService } from '../../services/citas.service';
 import { AlertasService } from '../../services/alertas.service';
 import { AuthService } from '../../services/auth.service';
+import { FechaService } from '../../services/fecha.service';
 
 interface DashboardStats {
   total: number;
@@ -38,6 +39,7 @@ export class DashboardComponent implements OnInit {
   private citasService = inject(CitasService);
   private alertasService = inject(AlertasService);
   private authService = inject(AuthService);
+  protected fechaService = inject(FechaService);
 
   ngOnInit() {
     this.cargarDatos();
@@ -59,10 +61,9 @@ export class DashboardComponent implements OnInit {
   readonly statsLlamadas = computed((): DashboardStats => {
     const lista = this.llamadasService.llamadasList();
     const hoy = new Date();
-    const hoyStr = hoy.toDateString();
     
     const llamadasHoy = lista.filter(l => 
-      new Date(l.horaInicio).toDateString() === hoyStr
+      this.fechaService.esMismoDia(new Date(l.horaInicio), hoy)
     );
     
     return {
@@ -82,11 +83,10 @@ export class DashboardComponent implements OnInit {
   readonly statsCitas = computed((): DashboardStats => {
     const lista = this.citasService.citasList();
     const hoy = new Date();
-    const hoyStr = hoy.toDateString();
     
     return {
       total: lista.length,
-      hoy: lista.filter(c => new Date(c.fecha).toDateString() === hoyStr).length,
+      hoy: lista.filter(c => this.fechaService.esMismoDia(new Date(c.fecha), hoy)).length,
       pendientes: lista.filter(c => c.estado === 'agendada').length,
       confirmadas: lista.filter(c => c.estado === 'confirmada').length,
       completadas: lista.filter(c => c.estado === 'completada').length,
@@ -159,26 +159,15 @@ export class DashboardComponent implements OnInit {
     return map[gravedad] || gravedad.toUpperCase();
   }
   
-  formatHora(date: Date): string {
-    return new Date(date).toLocaleTimeString('es-MX', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  }
-  
-  formatFecha(date: Date): string {
-    return new Date(date).toLocaleDateString('es-MX', {
-      day: 'numeric',
-      month: 'short'
-    });
-  }
-  
   today(): string {
-    return new Date().toLocaleDateString('es-MX', {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('es-MX', {
+      timeZone: 'America/Mexico_City',
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     });
+    return formatter.format(now);
   }
 }

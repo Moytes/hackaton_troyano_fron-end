@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Llamada } from '../models/llamada.model';
+import { FechaService } from './fecha.service';
 import { getCallsEndpoint, getCallsByUserEndpoint, getCreateEmergencyEndpoint } from '../config/api.config';
 
 interface CallFromBackend {
@@ -10,6 +11,9 @@ interface CallFromBackend {
   callType: string;
   status: string;
   classification: string;
+  patientName?: string;
+  latitud?: string;
+  longitud?: string;
   transcriptions: any[];
   summaryMarkdown: string;
   durationSeconds: number;
@@ -20,18 +24,30 @@ interface CallFromBackend {
   providedIn: 'root'
 })
 export class LlamadasHttpService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private fechaService = inject(FechaService);
 
   getAllCalls(): Observable<CallFromBackend[]> {
     const url = getCallsEndpoint();
-    console.log('🔵 [HTTP] Obteniendo ALL CALLS desde:', url);
     return this.http.get<CallFromBackend[]>(url).pipe(
       tap(calls => {
-        console.log('✅ [HTTP] Respuesta de ALL CALLS:', calls);
-        console.log('📊 Total llamadas recibidas:', calls.length);
+        console.log('📡 GET /api/calls →', calls);
         if (calls.length > 0) {
-          console.log('📌 Primera llamada (muestra):', calls[0]);
-          console.log('🏷️  Clasificaciones encontradas:', calls.map(c => c.classification));
+          const sorted = [...calls].sort((a, b) =>
+            this.fechaService.parseDate(b.createdAt).getTime() - this.fechaService.parseDate(a.createdAt).getTime()
+          );
+          const first = sorted[0];
+          const raw = first.createdAt;
+          const parsedUTC = this.fechaService.parseDate(raw);
+          const horaLocal = this.fechaService.formatFechaHora(parsedUTC);
+          
+          console.log('⏰ DIAGNÓSTICO FECHA (MÁS RECIENTE):', {
+            id: first.id,
+            rawBackend: raw,
+            parsedUTC: parsedUTC.toISOString(),
+            formateadoMexico: horaLocal,
+            callType: first.callType
+          });
         }
       })
     );
@@ -39,35 +55,27 @@ export class LlamadasHttpService {
 
   getCallsByUserId(userId: string): Observable<CallFromBackend[]> {
     const url = getCallsByUserEndpoint(userId);
-    console.log('🔵 [HTTP] Obteniendo CALLS POR USUARIO:', userId, 'URL:', url);
     return this.http.get<CallFromBackend[]>(url).pipe(
       tap(calls => {
-        console.log('✅ [HTTP] Respuesta de CALLS POR USUARIO:', calls);
-        console.log('📊 Total llamadas para usuario:', calls.length);
+        console.log('📡 GET /api/calls/user/:userId →', calls);
       })
     );
   }
 
   getCallsByClassification(classification: string): Observable<CallFromBackend[]> {
     const url = `${getCallsEndpoint()}/classification/${classification}`;
-    console.log('🔵 [HTTP] Obteniendo CALLS POR CLASIFICACIÓN:', classification, 'URL:', url);
     return this.http.get<CallFromBackend[]>(url).pipe(
       tap(calls => {
-        console.log('✅ [HTTP] Respuesta de CALLS POR CLASIFICACIÓN:', calls);
-        console.log('📊 Total llamadas con clasificación', classification + ':', calls.length);
+        console.log('📡 GET /api/calls/classification/:classification →', calls);
       })
     );
   }
 
   createEmergencyCall(): Observable<CallFromBackend> {
     const url = getCreateEmergencyEndpoint();
-    console.log('🔴 [HTTP] CREAR LLAMADA DE EMERGENCIA - URL:', url);
     return this.http.post<CallFromBackend>(url, {}).pipe(
       tap(call => {
-        console.log('✅ [HTTP] Emergencia creada exitosamente:', call);
-        console.log('📌 Emergencia ID:', call.id);
-        console.log('🚨 Classification:', call.classification);
-        console.log('⏱️  Status:', call.status);
+        console.log('📡 POST /api/calls/emergency →', call);
       })
     );
   }
@@ -90,7 +98,8 @@ export class LlamadasHttpService {
       'amarilla': 'moderado',
       'AMARILLA': 'moderado',
       'verde': 'leve',
-      'VERDE': 'leve'
+      'VERDE': 'leve',
+      'sin_clasificar': 'grave'
     };
 
     // Mapeos de estado (flujo)
@@ -104,7 +113,8 @@ export class LlamadasHttpService {
       'in_progress': 'en_proceso',
       'escalated': 'escalada',
       'resolved': 'resuelta',
-      'cancelled': 'cancelada'
+      'cancelled': 'cancelada',
+      'en_curso': 'en_proceso'
     };
 
     // Mapeos de tipo (categoría)
@@ -116,21 +126,20 @@ export class LlamadasHttpService {
       'emergency': 'emergencia',
       'consultation': 'consulta',
       'follow_up': 'seguimiento',
-      'reminder': 'recordatorio'
+      'reminder': 'recordatorio',
+      'boton': 'emergencia'
     };
 
-    const createdDate = new Date(call.createdAt);
+    const createdDate = this.fechaService.parseDate(call.createdAt);
     const userIdShort = call.userId ? call.userId.substring(0, 8) : `Call-${call.id.substring(0, 8)}`;
 
-    // Determinar clasificación: si es EMERGENCY o classification es GRAVE
     const clasificacion = clasificacionMap[call.classification] ||
                           (call.callType === 'EMERGENCY' || call.callType === 'emergency' ? 'grave' : 'normal');
 
-    // Determinar tipo: si classification es GRAVE, es emergencia
     const tipo = tipoMap[call.callType] ||
                  (call.classification === 'GRAVE' || call.classification === 'grave' ? 'emergencia' : 'consulta');
 
-    const llamadaMapeada = {
+    return {
       id: call.id,
       pacienteId: call.userId || '',
       pacienteNombre: `Paciente ${userIdShort}`,
@@ -144,23 +153,12 @@ export class LlamadasHttpService {
       resumenIA: call.summaryMarkdown,
       recomendacionesIA: call.summaryMarkdown?.split('\n').slice(3, 6) || [],
       horaInicio: createdDate,
-      horaFin: new Date(createdDate.getTime() + (call.durationSeconds || 0) * 1000)
+      horaFin: new Date(createdDate.getTime() + (call.durationSeconds || 0) * 1000),
+      transcriptions: (call.transcriptions || []).map(t => ({
+        ...t,
+        ts: this.fechaService.parseDate(t.ts).toISOString()
+      }))
     };
-
-    console.log(`🔄 [MAPEO #${index}] Call Backend:`, {
-      id: call.id,
-      classification_original: call.classification,
-      callType: call.callType,
-      status: call.status
-    });
-    console.log(`✨ [MAPEO #${index}] Llamada Mapeada:`, {
-      id: llamadaMapeada.id,
-      clasificacion: llamadaMapeada.clasificacion,
-      estado: llamadaMapeada.estado,
-      tipo: llamadaMapeada.tipo
-    });
-
-    return llamadaMapeada;
   }
 
   private calcularNivelTriage(clasificacion: 'grave' | 'moderado' | 'leve' | 'normal'): 1 | 2 | 3 | 4 | 5 {

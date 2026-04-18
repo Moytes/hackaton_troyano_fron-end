@@ -49,6 +49,9 @@ export class LoginComponent {
 
       if (!success) {
         this.error.set('Usuario o contraseña incorrectos');
+      } else {
+        console.log('✅ [LOGIN] Redirigiendo a selección de usuario');
+        this.router.navigate(['/usuario-selector']);
       }
     }, 800);
   }

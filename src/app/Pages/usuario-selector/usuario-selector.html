@@ -1,0 +1,37 @@
+<div class="selector-container">
+  <div class="selector-content">
+    <div class="selector-header">
+      <div class="logo">
+        <i class="pi pi-heart-fill"></i>
+      </div>
+      <h1>TeleAsistencia Sierra</h1>
+      <p>Selecciona usuario para continuar</p>
+    </div>
+
+    <div class="usuarios-grid">
+      @for (usuario of usuariosEstaticos; track usuario.id) {
+        <div class="usuario-card" (click)="seleccionarUsuario(usuario)">
+          <div class="card-icon">
+            <i [class]="'pi ' + usuario.icon"></i>
+          </div>
+          <div class="card-content">
+            <h3>{{ usuario.nombre }} {{ usuario.apellido }}</h3>
+            <p class="rol">{{ usuario.rol | uppercase }}</p>
+            <p class="especialidad">{{ usuario.especialidad }}</p>
+          </div>
+          <div class="card-action">
+            <button pButton icon="pi pi-arrow-right" class="p-button-rounded p-button-text"></button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="selector-footer">
+      <button pButton label="Cerrar Sesión" icon="pi pi-sign-out" (click)="logout()" class="p-button-outlined logout-btn"></button>
+    </div>
+  </div>
+
+  <div class="selector-background">
+    <div class="bg-pattern"></div>
+  </div>
+</div>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { AlertasService } from '../../services/alertas.service';
+import { FechaService } from '../../services/fecha.service';
 import { Alerta } from '../../models/alerta.model';
 
 @Component({
@@ -14,6 +15,7 @@ import { Alerta } from '../../models/alerta.model';
 })
 export class AlertasComponent {
   private alertasService = inject(AlertasService);
+  protected fechaService = inject(FechaService);
   
   readonly alertas = this.alertasService.alertasList;
   readonly sinLeer = this.alertasService.sinLeer;
@@ -55,11 +57,11 @@ export class AlertasComponent {
     const minutos = Math.floor(diff / 60000);
     const horas = Math.floor(minutos / 60);
     const dias = Math.floor(horas / 24);
-    
+
     if (minutos < 1) return 'Ahora';
     if (minutos < 60) return `Hace ${minutos} min`;
     if (horas < 24) return `Hace ${horas} h`;
     if (dias < 7) return `Hace ${dias} días`;
-    return fecha.toLocaleDateString('es-MX');
+    return this.fechaService.formatFechaCorta(fecha);
   }
 }

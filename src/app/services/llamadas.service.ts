@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
   providedIn: 'root'
 })
 export class LlamadasService {
-  private llamadas = signal<Llamada[]>(LLAMADAS_MOCK);
+  private llamadas = signal<Llamada[]>([]);
   private filtroActual = signal<FiltroLlamadas>({});
   private httpService = inject(LlamadasHttpService);
   private cargado = signal(false);
@@ -18,7 +18,7 @@ export class LlamadasService {
   readonly llamadasFiltradas = computed(() => {
     const filtro = this.filtroActual();
     let result = this.llamadas();
-    
+
     if (filtro.clasificacion) {
       result = result.filter(l => l.clasificacion === filtro.clasificacion);
     }
@@ -27,13 +27,17 @@ export class LlamadasService {
     }
     if (filtro.search) {
       const q = filtro.search.toLowerCase();
-      result = result.filter(l => 
+      result = result.filter(l =>
         l.pacienteNombre.toLowerCase().includes(q) ||
         l.descripcion.toLowerCase().includes(q)
       );
     }
-    
-    return result.sort((a, b) => this.ordenarPorGravedad(a) - this.ordenarPorGravedad(b));
+
+    return result.sort((a, b) => {
+      const tiempoA = new Date(a.horaInicio).getTime();
+      const tiempoB = new Date(b.horaInicio).getTime();
+      return tiempoB - tiempoA;
+    });
   });
   
   readonly graves = computed(() => this.llamadas().filter(l => l.clasificacion === 'grave'));
@@ -72,6 +76,22 @@ export class LlamadasService {
       list.map(l => l.id === id ? { ...l, ...datos } : l)
     );
   }
+
+  agregarLlamada(llamada: Llamada): void {
+    console.log('➕ [SERVICIO] Agregando nueva llamada:', llamada.id);
+    this.llamadas.update(list => [llamada, ...list]);
+  }
+
+  agregarOActualizar(llamada: Llamada): void {
+    const existe = this.llamadas().some(l => l.id === llamada.id);
+    if (existe) {
+      console.log('🔄 [SERVICIO] Actualizando llamada existente:', llamada.id);
+      this.actualizarLlamada(llamada.id, llamada);
+    } else {
+      console.log('➕ [SERVICIO] Llamada nueva, agregando:', llamada.id);
+      this.agregarLlamada(llamada);
+    }
+  }
   
   private ordenarPorGravedad(l: Llamada): number {
     const orden: Record<Clasificacion, number> = {
@@ -85,80 +105,68 @@ export class LlamadasService {
 
   async cargarLlamadasDelBackend(): Promise<void> {
     try {
-      console.log('📱 [SERVICIO] Iniciando carga de llamadas del backend...');
       const calls = await firstValueFrom(this.httpService.getAllCalls());
-
-      console.log('📊 [SERVICIO] Llamadas recibidas del backend:', calls.length);
-      console.log('🔍 [SERVICIO] Datos RAW del backend:', calls);
-
       const llamadasMapeadas = calls.map((call, index) =>
         this.httpService.mapBackendToLlamada(call, index)
       );
-
-      console.log('✅ [SERVICIO] Llamadas mapeadas:', llamadasMapeadas.length);
-      console.log('📋 [SERVICIO] Llamadas finales:', llamadasMapeadas);
-      console.log('🏷️  [SERVICIO] Clasificaciones cargadas:',
-        llamadasMapeadas.map(l => ({ id: l.id, clasificacion: l.clasificacion }))
-      );
-
-      this.llamadas.set(llamadasMapeadas);
+      const llamadasOrdenadas = llamadasMapeadas.sort((a, b) => {
+        const tiempoA = new Date(a.horaInicio).getTime();
+        const tiempoB = new Date(b.horaInicio).getTime();
+        return tiempoB - tiempoA;
+      });
+      this.llamadas.set(llamadasOrdenadas);
       this.cargado.set(true);
-
-      console.log('🎉 [SERVICIO] Carga completada. Total en señal:', this.llamadas().length);
     } catch (error) {
-      console.error('❌ [SERVICIO] Error al cargar llamadas del backend:', error);
-      console.warn('⚠️  [SERVICIO] Usando datos MOCK como fallback');
+      console.log('📡 GET /api/calls → Error, usando MOCK como fallback');
+      this.llamadas.set(LLAMADAS_MOCK);
       this.cargado.set(true);
     }
   }
 
   async cargarLlamadasDelBackendPorUsuario(userId: string): Promise<void> {
     try {
-      console.log(`📱 [SERVICIO] Cargando llamadas para usuario: ${userId}`);
       const calls = await firstValueFrom(this.httpService.getCallsByUserId(userId));
       const llamadasMapeadas = calls.map((call, index) =>
         this.httpService.mapBackendToLlamada(call, index)
       );
-      this.llamadas.set(llamadasMapeadas);
+      const llamadasOrdenadas = llamadasMapeadas.sort((a, b) =>
+        new Date(b.horaInicio).getTime() - new Date(a.horaInicio).getTime()
+      );
+      this.llamadas.set(llamadasOrdenadas);
       this.cargado.set(true);
-      console.log(`✅ [SERVICIO] Se cargaron ${llamadasMapeadas.length} llamadas para el usuario`);
     } catch (error) {
-      console.error(`❌ [SERVICIO] Error cargando llamadas del usuario ${userId}:`, error);
+      console.log(`📡 GET /api/calls/user/:userId → Error, usando MOCK como fallback`);
+      this.llamadas.set(LLAMADAS_MOCK.filter(l => l.pacienteId === userId));
       this.cargado.set(true);
     }
   }
 
   async cargarLlamadasPorClasificacion(clasificacion: string): Promise<void> {
     try {
-      console.log(`📱 [SERVICIO] Cargando llamadas por clasificación: ${clasificacion}`);
       const calls = await firstValueFrom(this.httpService.getCallsByClassification(clasificacion));
       const llamadasMapeadas = calls.map((call, index) =>
         this.httpService.mapBackendToLlamada(call, index)
       );
-      this.llamadas.set(llamadasMapeadas);
+      const llamadasOrdenadas = llamadasMapeadas.sort((a, b) =>
+        new Date(b.horaInicio).getTime() - new Date(a.horaInicio).getTime()
+      );
+      this.llamadas.set(llamadasOrdenadas);
       this.cargado.set(true);
-      console.log(`✅ [SERVICIO] Se cargaron ${llamadasMapeadas.length} llamadas con clasificación: ${clasificacion}`);
     } catch (error) {
-      console.error(`❌ [SERVICIO] Error cargando llamadas por clasificación ${clasificacion}:`, error);
+      console.log(`📡 GET /api/calls/classification/:classification → Error, usando MOCK como fallback`);
+      this.llamadas.set(LLAMADAS_MOCK.filter(l => l.clasificacion === clasificacion));
       this.cargado.set(true);
     }
   }
 
   async crearLlamadaEmergencia(): Promise<Llamada | null> {
     try {
-      console.log('🚨 [SERVICIO] Iniciando creación de llamada de emergencia...');
       const callResponse = await firstValueFrom(this.httpService.createEmergencyCall());
       const llamadaMapeada = this.httpService.mapBackendToLlamada(callResponse, 0);
-
-      console.log('✅ [SERVICIO] Emergencia creada y mapeada:', llamadaMapeada);
-
-      // Agregar a la lista existente
       this.llamadas.update(list => [llamadaMapeada, ...list]);
-
-      console.log('📋 [SERVICIO] Total llamadas después de crear emergencia:', this.llamadas().length);
       return llamadaMapeada;
     } catch (error) {
-      console.error('❌ [SERVICIO] Error creando llamada de emergencia:', error);
+      console.log('📡 POST /api/calls/emergency → Error creando emergencia');
       return null;
     }
   }

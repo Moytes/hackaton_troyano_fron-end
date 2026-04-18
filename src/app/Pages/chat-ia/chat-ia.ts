@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { AvatarModule } from 'primeng/avatar';
 import { ChipModule } from 'primeng/chip';
 import { ChatService } from '../../services/chat.service';
+import { FechaService } from '../../services/fecha.service';
 import { Mensaje } from '../../models/mensaje.model';
 import { LLAMADAS_MOCK } from '../../data/mock-data';
 
@@ -19,8 +20,9 @@ import { LLAMADAS_MOCK } from '../../data/mock-data';
 })
 export class ChatIAComponent implements AfterViewChecked {
   @ViewChild('chatContainer') chatContainer!: ElementRef;
-  
+
   private chatService = inject(ChatService);
+  protected fechaService = inject(FechaService);
   
   mensajeActual = signal('');
   seleccionadaLlamadaId = signal<string>(LLAMADAS_MOCK[0].id);
@@ -91,9 +93,6 @@ export class ChatIAComponent implements AfterViewChecked {
   }
   
   formatHora(date: Date): string {
-    return new Date(date).toLocaleTimeString('es-MX', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return this.fechaService.formatHora(date);
   }
 }

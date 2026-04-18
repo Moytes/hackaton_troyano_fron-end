@@ -67,22 +67,32 @@
     
     <!-- Lista -->
     <div class="lista">
-      @for (llamada of llamadasFiltradas(); track llamada.id) {
-        <div 
-          class="llamada-card" 
+      @for (llamada of llamadasFiltradas(); track llamada.id; let i = $index) {
+        @if (i === 0 && llamadasFiltradas().length > 0) {
+          <div class="reciente-label">
+            <i class="pi pi-lightning-fill"></i>
+            <span>MÁS RECIENTE</span>
+          </div>
+        }
+        <div
+          class="llamada-card"
           [class]="'card-' + llamada.clasificacion"
+          [class.reciente]="isReciente(i)"
           [class.seleccionada]="llamadaSeleccionada()?.id === llamada.id"
           (click)="seleccionarLlamada(llamada)">
           <div class="card-indicator" [class]="llamada.clasificacion"></div>
           <div class="card-content">
             <div class="card-header-row">
               <span class="paciente-nombre">{{ llamada.pacienteNombre }}</span>
-              <span class="card-hora">{{ formatHora(llamada.horaInicio) }}</span>
+              <div class="card-tiempo">
+                <span class="card-dia">{{ fechaService.getDiaLabel(llamada.horaInicio) }}</span>
+                <span class="card-hora">{{ fechaService.formatHora(llamada.horaInicio) }}</span>
+              </div>
             </div>
-            <p class="card-desc">{{ llamada.descripcion | slice:0:45 }}...</p>
+            <p class="card-desc">{{ llamada.descripcion | slice:0:50 }}...</p>
             <div class="card-meta">
-              <p-tag 
-                [value]="getLabelClasificacion(llamada.clasificacion)" 
+              <p-tag
+                [value]="getLabelClasificacion(llamada.clasificacion)"
                 [severity]="getSeverity(llamada.clasificacion)">
               </p-tag>
               <span class="card-triage"><i class="pi pi-target"></i> T{{ llamada.nivelTriage }}</span>

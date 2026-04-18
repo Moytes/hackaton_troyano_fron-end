@@ -8,6 +8,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { CitasService } from '../../services/citas.service';
+import { FechaService } from '../../services/fecha.service';
 import { Cita, Doctor } from '../../models/cita.model';
 import { DOCTORES_MOCK, CITAS_MOCK } from '../../data/mock-data';
 
@@ -20,6 +21,7 @@ import { DOCTORES_MOCK, CITAS_MOCK } from '../../data/mock-data';
 })
 export class CitasComponent {
   private citasService = inject(CitasService);
+  protected fechaService = inject(FechaService);
   
   showAgendar = signal(false);
   selectedDoctor = signal<Doctor | null>(null);
@@ -86,17 +88,16 @@ export class CitasComponent {
   }
   
   formatFecha(date: Date): string {
-    return new Date(date).toLocaleDateString('es-MX', {
+    const formatter = new Intl.DateTimeFormat('es-MX', {
+      timeZone: 'America/Mexico_City',
       weekday: 'long',
       day: 'numeric',
       month: 'long'
     });
+    return formatter.format(date);
   }
-  
+
   formatHora(date: Date): string {
-    return new Date(date).toLocaleTimeString('es-MX', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return this.fechaService.formatHora(date);
   }
 }
